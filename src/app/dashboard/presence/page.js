@@ -66,11 +66,17 @@ export default function PresencePage() {
                 const q = query(
                     collection(db, 'presence_tests'),
                     where('userId', '==', user.uid),
-                    orderBy('createdAt', 'desc'),
-                    limit(10)
                 );
                 const snap = await getDocs(q);
-                setHistory(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+                const items = snap.docs
+                    .map((d) => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => {
+                        const ta = a.createdAt?.toDate?.() || new Date(a.createdAt || 0);
+                        const tb = b.createdAt?.toDate?.() || new Date(b.createdAt || 0);
+                        return tb - ta;
+                    })
+                    .slice(0, 10);
+                setHistory(items);
             } catch (err) {
                 console.error('Failed to load history:', err);
             } finally {

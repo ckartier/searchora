@@ -39,10 +39,15 @@ export async function getUserProjects(uid) {
     const q = query(
         collection(db, 'projects'),
         where('userId', '==', uid),
-        orderBy('createdAt', 'desc')
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    return snapshot.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+            const ta = a.createdAt?.toDate?.() || new Date(a.createdAt || 0);
+            const tb = b.createdAt?.toDate?.() || new Date(b.createdAt || 0);
+            return tb - ta;
+        });
 }
 
 export async function getProject(projectId) {
@@ -212,11 +217,22 @@ export async function getUserAuditsFromStore(uid, count = 20) {
     const q = query(
         collection(db, 'audits'),
         where('userId', '==', uid),
-        orderBy('createdAt', 'desc'),
-        limit(count)
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    return snapshot.docs
+        .map((d) => {
+            const data = d.data();
+            // Normalize createdAt for display
+            let createdAt = data.createdAt;
+            if (createdAt?.toDate) createdAt = createdAt.toDate().toISOString();
+            return { id: d.id, ...data, createdAt };
+        })
+        .sort((a, b) => {
+            const ta = new Date(a.createdAt || 0);
+            const tb = new Date(b.createdAt || 0);
+            return tb - ta;
+        })
+        .slice(0, count);
 }
 
 export async function getAuditById(auditId) {
@@ -253,10 +269,11 @@ export async function getAuditCrawledPages(auditId) {
     const q = query(
         collection(db, 'crawled_pages'),
         where('auditId', '==', auditId),
-        orderBy('pageScore', 'desc')
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    return snapshot.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.pageScore || 0) - (a.pageScore || 0));
 }
 
 export async function getAuditCompetitors(auditId) {
