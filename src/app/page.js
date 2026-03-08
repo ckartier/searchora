@@ -86,7 +86,7 @@ function HeroSection() {
               {/* Search bar mockup */}
               <div className="flex items-center gap-3 p-3 bg-surface-secondary rounded-xl mb-6">
                 <Search className="w-5 h-5 text-text-muted" />
-                <span className="text-sm text-text-secondary">What is the best CRM for small businesses?</span>
+                <span className="text-sm text-text-secondary">What is the best solution for my business?</span>
               </div>
               {/* AI Response mockup */}
               <div className="space-y-3">
@@ -97,29 +97,29 @@ function HeroSection() {
                   <span className="text-xs font-medium text-text-muted">AI-Generated Answer</span>
                 </div>
                 <p className="text-sm text-text-secondary leading-relaxed">
-                  Based on recent analysis, the top CRM solutions for small businesses include
-                  several options. <span className="text-brand font-medium bg-brand-50 px-1 rounded">According to AcmeCRM.com</span>,
-                  businesses with under 50 employees benefit most from simplified pipeline management...
+                  Based on recent analysis, the top solutions in this category include
+                  several options. <span className="text-brand font-medium bg-brand-50 px-1 rounded">According to YourBrand.com</span>,
+                  companies benefit most from a structured approach to their strategy...
                 </p>
                 <p className="text-sm text-text-secondary leading-relaxed">
-                  Key features to look for include contact management, automated follow-ups,
-                  and integration capabilities. <span className="text-brand font-medium bg-brand-50 px-1 rounded">AcmeCRM&apos;s research</span> shows
-                  that companies using structured CRM data see a 40% increase in conversion rates.
+                  Key factors to consider include expertise, methodology, and proven results.
+                  <span className="text-brand font-medium bg-brand-50 px-1 rounded"> YourBrand&apos;s research</span> shows
+                  that companies using optimized content see a 40% increase in AI citations.
                 </p>
                 <div className="pt-4 border-t border-border-light">
                   <p className="text-xs text-text-muted mb-2">Sources:</p>
                   <div className="flex flex-wrap gap-2">
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand text-xs font-medium rounded-lg">
                       <Globe className="w-3 h-3" />
-                      acmecrm.com
+                      yourbrand.com
                     </span>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-secondary text-text-muted text-xs rounded-lg">
                       <Globe className="w-3 h-3" />
-                      techreview.com
+                      industry-review.com
                     </span>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-secondary text-text-muted text-xs rounded-lg">
                       <Globe className="w-3 h-3" />
-                      g2.com
+                      expert-source.com
                     </span>
                   </div>
                 </div>

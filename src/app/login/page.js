@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
@@ -36,10 +37,8 @@ export default function LoginPage() {
         <div className="min-h-[80vh] flex items-center justify-center section-padding py-16">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
-                        <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center shadow-[0_2px_8px_rgba(249,115,22,0.3)]">
-                            <span className="text-white font-bold text-lg">S</span>
-                        </div>
+                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
+                        <Image src="/logo.png" alt="Searchora" width={44} height={44} />
                     </Link>
                     <h1 className="text-2xl font-bold text-text-primary mb-2">{t('auth.loginTitle')}</h1>
                     <p className="text-sm text-text-secondary">{t('auth.loginSubtitle')}</p>

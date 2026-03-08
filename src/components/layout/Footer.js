@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ArrowUpRight } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
@@ -38,10 +39,8 @@ export default function Footer() {
                 <div className="py-16 lg:py-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 lg:gap-8">
                     {/* Brand column */}
                     <div className="col-span-2 md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
-                        <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
-                            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">S</span>
-                            </div>
+                        <Link href="/" className="inline-flex items-center gap-2 mb-4">
+                            <Image src="/logo.png" alt="Searchora" width={32} height={32} className="invert" />
                             <span className="text-lg font-bold tracking-tight">Searchora</span>
                         </Link>
                         <p className="text-sm text-gray-400 leading-relaxed max-w-xs mt-3">

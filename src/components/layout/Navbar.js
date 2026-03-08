@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
@@ -40,17 +41,15 @@ export default function Navbar() {
         <>
             <nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                        ? 'bg-white/95 backdrop-blur-md shadow-[0_1px_3px_rgba(0,0,0,0.05)] border-b border-border/50'
-                        : 'bg-transparent'
+                    ? 'bg-white/95 backdrop-blur-md shadow-[0_1px_3px_rgba(0,0,0,0.05)] border-b border-border/50'
+                    : 'bg-transparent'
                     }`}
             >
                 <div className="container-wide section-padding">
                     <div className="flex items-center justify-between h-16 lg:h-20">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-2.5 group">
-                            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center shadow-[0_2px_8px_rgba(249,115,22,0.3)] group-hover:shadow-[0_4px_12px_rgba(249,115,22,0.4)] transition-shadow duration-300">
-                                <span className="text-white font-bold text-sm">S</span>
-                            </div>
+                        <Link href="/" className="flex items-center gap-2 group">
+                            <Image src="/logo.png" alt="Searchora" width={36} height={36} className="group-hover:scale-105 transition-transform duration-300" />
                             <span className="text-xl font-bold text-text-primary tracking-tight">
                                 Searchora
                             </span>
@@ -63,8 +62,8 @@ export default function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${pathname === link.href
-                                            ? 'text-brand bg-brand-light'
-                                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary'
+                                        ? 'text-brand bg-brand-light'
+                                        : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary'
                                         }`}
                                 >
                                     {t(`nav.${link.key}`)}
@@ -110,8 +109,8 @@ export default function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     className={`block px-4 py-3 text-sm font-medium rounded-xl transition-colors ${pathname === link.href
-                                            ? 'text-brand bg-brand-light'
-                                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary'
+                                        ? 'text-brand bg-brand-light'
+                                        : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary'
                                         }`}
                                 >
                                     {t(`nav.${link.key}`)}

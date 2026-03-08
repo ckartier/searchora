@@ -1,173 +1,155 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
-    LayoutDashboard,
-    BarChart3,
-    Globe,
-    FileText,
-    Target,
-    Settings,
-    LogOut,
-    Menu,
-    X,
-    Zap,
-    Bell,
-    Search,
-    ChevronDown,
-    Plus,
+    LayoutDashboard, BarChart3, Globe, FileText, Target, Settings,
+    LogOut, Zap, Bell, Plus,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import Button from '@/components/ui/Button';
 
-const sidebarLinks = [
-    { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Audits', href: '/dashboard/audits', icon: BarChart3 },
-    { label: 'Websites', href: '/dashboard/websites', icon: Globe },
-    { label: 'Reports', href: '/dashboard/reports', icon: FileText },
-    { label: 'Competitors', href: '/dashboard/competitors', icon: Target },
-    { label: 'Settings', href: '/dashboard/settings', icon: Settings },
-];
-
 export default function DashboardLayout({ children }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
     const { user, signOut } = useAuth();
+    const { t } = useI18n();
+    const [indicatorStyle, setIndicatorStyle] = useState({});
+    const navRef = useRef(null);
+
+    const navItems = [
+        { label: t('dashboard.overview'), href: '/dashboard', icon: LayoutDashboard },
+        { label: t('dashboard.audits'), href: '/dashboard/audits', icon: BarChart3 },
+        { label: t('dashboard.websites'), href: '/dashboard/websites', icon: Globe },
+        { label: t('dashboard.reports'), href: '/dashboard/reports', icon: FileText },
+        { label: t('dashboard.competitors'), href: '/dashboard/competitors', icon: Target },
+        { label: t('dashboard.settings'), href: '/dashboard/settings', icon: Settings },
+    ];
+
+    // Animate the active indicator pill
+    useEffect(() => {
+        if (!navRef.current) return;
+        const activeIdx = navItems.findIndex((n) =>
+            n.href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(n.href)
+        );
+        const buttons = navRef.current.querySelectorAll('[data-nav-btn]');
+        if (buttons[activeIdx]) {
+            const btn = buttons[activeIdx];
+            const container = navRef.current;
+            setIndicatorStyle({
+                width: btn.offsetWidth,
+                left: btn.offsetLeft - container.offsetLeft,
+                opacity: 1,
+            });
+        }
+    }, [pathname]);
 
     const handleSignOut = async () => {
-        try {
-            await signOut();
-        } catch (err) {
-            console.error('Sign out error:', err);
-        }
+        try { await signOut(); router.push('/'); } catch (err) { console.error(err); }
     };
 
+    const isActive = (href) =>
+        href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href);
+
+    // Don't show this layout for the audit wizard page
+    if (pathname === '/dashboard/audit') {
+        return <>{children}</>;
+    }
+
     return (
-        <div className="flex h-screen bg-surface-secondary overflow-hidden -mt-16 lg:-mt-20 pt-0">
-            {/* Sidebar */}
-            <aside
-                className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-border flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
-            >
-                {/* Sidebar header */}
-                <div className="h-16 flex items-center justify-between px-5 border-b border-border">
-                    <Link href="/" className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">S</span>
-                        </div>
-                        <span className="text-lg font-bold text-text-primary tracking-tight">
-                            Searchora
-                        </span>
-                    </Link>
-                    <button
-                        onClick={() => setSidebarOpen(false)}
-                        className="lg:hidden p-1.5 rounded-lg text-text-muted hover:bg-surface-secondary cursor-pointer"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
-                </div>
+        <div className="min-h-screen bg-surface-secondary -mt-16 lg:-mt-20 pt-16 lg:pt-20">
 
-                {/* Nav links */}
-                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                    {sidebarLinks.map((link) => {
-                        const isActive = pathname === link.href;
-                        return (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                onClick={() => setSidebarOpen(false)}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive
-                                        ? 'bg-brand-50 text-brand'
-                                        : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary'
-                                    }`}
-                            >
-                                <link.icon className={`w-4.5 h-4.5 ${isActive ? 'text-brand' : ''}`} />
-                                {link.label}
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                {/* Sidebar footer */}
-                <div className="p-4 border-t border-border">
-                    <Link href="/dashboard/audit">
-                        <Button size="sm" className="w-full" icon={Plus}>
-                            Run New Audit
-                        </Button>
-                    </Link>
-                    <button
-                        onClick={handleSignOut}
-                        className="flex items-center gap-2 w-full px-3 py-2.5 mt-2 text-sm text-text-muted hover:text-red-500 rounded-xl hover:bg-red-50 transition-colors cursor-pointer"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Sign out
-                    </button>
-                </div>
-            </aside>
-
-            {/* Mobile overlay */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black/20 z-40 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
-
-            {/* Main content */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                {/* Top navbar */}
-                <header className="h-16 bg-white border-b border-border flex items-center justify-between px-4 lg:px-8 shrink-0">
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-lg text-text-muted hover:bg-surface-secondary cursor-pointer"
-                        >
-                            <Menu className="w-5 h-5" />
-                        </button>
-
-                        {/* Search */}
-                        <div className="hidden sm:flex items-center gap-2 bg-surface-secondary rounded-xl px-3 py-2 w-64">
-                            <Search className="w-4 h-4 text-text-muted" />
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="bg-transparent text-sm text-text-primary placeholder:text-text-muted border-none outline-none w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        {/* Notifications */}
-                        <button className="relative p-2 rounded-lg text-text-muted hover:bg-surface-secondary transition-colors cursor-pointer">
-                            <Bell className="w-5 h-5" />
-                            <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-brand rounded-full" />
-                        </button>
-
-                        {/* User */}
-                        <div className="flex items-center gap-2 pl-3 border-l border-border">
-                            <div className="w-8 h-8 bg-brand-50 rounded-full flex items-center justify-center">
-                                <span className="text-xs font-semibold text-brand">
+            {/* ===== Top bar ===== */}
+            <div className="bg-white border-b border-border sticky top-16 lg:top-20 z-30">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        {/* Left — user greeting */}
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-brand/10 rounded-xl flex items-center justify-center">
+                                <span className="text-sm font-bold text-brand">
                                     {user?.displayName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                                 </span>
                             </div>
                             <div className="hidden sm:block">
-                                <p className="text-sm font-medium text-text-primary leading-tight">
+                                <p className="text-sm font-semibold text-text-primary leading-tight">
                                     {user?.displayName || 'User'}
                                 </p>
-                                <p className="text-[10px] text-text-muted">
-                                    {user?.email || 'user@company.com'}
-                                </p>
+                                <p className="text-[11px] text-text-muted">{user?.email}</p>
                             </div>
                         </div>
-                    </div>
-                </header>
 
-                {/* Page content */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+                        {/* Right — actions */}
+                        <div className="flex items-center gap-2">
+                            <button className="relative p-2.5 rounded-xl text-text-muted hover:bg-surface-secondary hover:text-text-primary transition-all duration-200 cursor-pointer">
+                                <Bell className="w-[18px] h-[18px]" />
+                                <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-brand rounded-full" />
+                            </button>
+                            <Link href="/dashboard/audit">
+                                <Button size="sm" icon={Zap} className="shadow-[0_2px_8px_rgba(249,115,22,0.25)]">
+                                    {t('dashboard.runNewAudit')}
+                                </Button>
+                            </Link>
+                            <button
+                                onClick={handleSignOut}
+                                className="p-2.5 rounded-xl text-text-muted hover:bg-red-50 hover:text-red-500 transition-all duration-200 cursor-pointer"
+                                title={t('dashboard.signOut')}
+                            >
+                                <LogOut className="w-[18px] h-[18px]" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ===== Navigation pills ===== */}
+            <div className="bg-white border-b border-border/50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="relative py-3" ref={navRef}>
+                        {/* Animated active indicator */}
+                        <div
+                            className="absolute top-3 h-[calc(100%-24px)] bg-brand/[0.08] rounded-xl transition-all duration-300 ease-out"
+                            style={{
+                                width: indicatorStyle.width || 0,
+                                left: indicatorStyle.left || 0,
+                                opacity: indicatorStyle.opacity || 0,
+                            }}
+                        />
+
+                        {/* Nav buttons */}
+                        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                            {navItems.map((item) => {
+                                const active = isActive(item.href);
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        data-nav-btn
+                                        className={`
+                      relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium
+                      transition-all duration-200 whitespace-nowrap cursor-pointer
+                      ${active
+                                                ? 'text-brand'
+                                                : 'text-text-muted hover:text-text-primary hover:bg-surface-secondary/60'
+                                            }
+                    `}
+                                    >
+                                        <item.icon className={`w-4 h-4 transition-colors duration-200 ${active ? 'text-brand' : ''}`} />
+                                        {item.label}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ===== Page content ===== */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="animate-fade-in">
                     {children}
-                </main>
+                </div>
             </div>
         </div>
     );
