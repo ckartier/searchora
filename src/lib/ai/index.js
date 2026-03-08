@@ -24,16 +24,54 @@ import {
 } from './responseParser.js';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const LLM_PROVIDER = process.env.LLM_PROVIDER || 'demo';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+const LLM_PROVIDER = process.env.LLM_PROVIDER || (GEMINI_API_KEY ? 'gemini' : 'demo');
 
 /* ==================== LLM CLIENT ==================== */
 
 /**
- * Call the configured LLM provider
+ * Call the configured LLM provider (Gemini, OpenAI, or demo fallback)
  */
 async function callLLM(systemPrompt, userPrompt, options = {}) {
     const { temperature = 0.7, maxTokens = 3000 } = options;
 
+    // --- Gemini (default, free with Firebase) ---
+    if ((LLM_PROVIDER === 'gemini' || LLM_PROVIDER === 'google') && GEMINI_API_KEY) {
+        try {
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+                        }],
+                        generationConfig: {
+                            temperature,
+                            maxOutputTokens: maxTokens,
+                        },
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                console.error('Gemini API error:', error);
+                // Fall through to demo mode
+                return null;
+            }
+
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            return text || null;
+        } catch (err) {
+            console.error('Gemini call failed:', err.message);
+            return null;
+        }
+    }
+
+    // --- OpenAI ---
     if (LLM_PROVIDER === 'openai' && OPENAI_API_KEY) {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -172,10 +210,10 @@ function buildDemoAudit(input) {
     // ---- Summary ----
     const scoreLevel = siteScore >= 60 ? 'solid' : siteScore >= 30 ? 'moderate' : 'low';
     const summary = `${companyName} has ${scoreLevel} AI visibility with a score of ${siteScore}/100 across ${input.totalPages || 0} analyzed pages. ${siteSignals.contentMostlyCommercial
-            ? 'The site is heavily commercial with limited informational content that AI tools prefer to cite.'
-            : siteSignals.hasEducationalContent
-                ? 'The site has some educational content but needs more structured, answer-first formatting for AI retrieval.'
-                : 'The site lacks the educational and informational content that AI tools use as primary sources.'
+        ? 'The site is heavily commercial with limited informational content that AI tools prefer to cite.'
+        : siteSignals.hasEducationalContent
+            ? 'The site has some educational content but needs more structured, answer-first formatting for AI retrieval.'
+            : 'The site lacks the educational and informational content that AI tools use as primary sources.'
         } ${contentGaps.length > 0
             ? `There are ${contentGaps.length} significant content gaps to address.`
             : 'The content foundation is promising.'
@@ -312,10 +350,10 @@ function buildDemoAudit(input) {
 
     // ---- Executive report ----
     const executiveReport = `${companyName} currently scores ${siteScore}/100 for AI visibility. ${siteScore >= 60
-            ? 'The site has a strong foundation with clear opportunities to reach top-tier visibility.'
-            : siteScore >= 30
-                ? 'The site has moderate presence but is missing critical content types that AI tools prefer to cite.'
-                : 'The site has limited AI visibility — competitors are likely capturing the majority of AI-generated answer citations.'
+        ? 'The site has a strong foundation with clear opportunities to reach top-tier visibility.'
+        : siteScore >= 30
+            ? 'The site has moderate presence but is missing critical content types that AI tools prefer to cite.'
+            : 'The site has limited AI visibility — competitors are likely capturing the majority of AI-generated answer citations.'
         } ${contentGaps.length > 0
             ? `The most impactful action is to ${contentGaps[0]?.action?.toLowerCase() || 'create structured informational content'}.`
             : 'Focused content optimization can significantly improve AI citation rates.'
@@ -468,10 +506,10 @@ function buildDemoReport(auditData) {
 
     return {
         report: `${name} currently achieves a ${score}/100 AI visibility score. ${score >= 60
-                ? 'The site has a solid foundation with clear paths to top-tier visibility.'
-                : score >= 30
-                    ? 'The site has moderate presence but is missing critical content formats that AI tools prefer.'
-                    : 'The site has significant gaps in AI-ready content, providing large improvement opportunities.'
+            ? 'The site has a solid foundation with clear paths to top-tier visibility.'
+            : score >= 30
+                ? 'The site has moderate presence but is missing critical content formats that AI tools prefer.'
+                : 'The site has significant gaps in AI-ready content, providing large improvement opportunities.'
             } The most impactful next step is to ${auditData.weaknesses?.[0]?.toLowerCase() || 'create structured informational content'
             }.`,
         biggestIssue: auditData.weaknesses?.[0] || 'Limited AI-optimized content presence',

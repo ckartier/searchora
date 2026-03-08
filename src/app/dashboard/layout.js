@@ -39,11 +39,6 @@ export default function DashboardLayout({ children }) {
     const currentNav = navItems.find((n) => isActive(n.href));
     const pageTitle = currentNav?.label || 'Dashboard';
 
-    // Don't show this layout for the audit wizard page
-    if (pathname === '/dashboard/audit') {
-        return <>{children}</>;
-    }
-
     return (
         <div className="min-h-screen bg-surface-secondary" style={{ paddingTop: 0 }}>
 
