@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
     LayoutDashboard, BarChart3, Globe, FileText, Target, Settings,
-    LogOut, Zap, Bell, Plus, Menu, X,
+    LogOut, Zap, Bell, Plus, Menu, X, Search,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
@@ -23,6 +23,7 @@ export default function DashboardLayout({ children }) {
         { label: t('dashboard.overview'), href: '/dashboard', icon: LayoutDashboard },
         { label: t('dashboard.audits'), href: '/dashboard/audits', icon: BarChart3 },
         { label: t('dashboard.websites'), href: '/dashboard/websites', icon: Globe },
+        { label: 'Presence IA', href: '/dashboard/presence', icon: Search },
         { label: t('dashboard.reports'), href: '/dashboard/reports', icon: FileText },
         { label: t('dashboard.competitors'), href: '/dashboard/competitors', icon: Target },
         { label: t('dashboard.settings'), href: '/dashboard/settings', icon: Settings },
