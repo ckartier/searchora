@@ -1,65 +1,504 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Link from 'next/link';
+import { ArrowRight, Play, Search, Eye, TrendingUp, Zap, BarChart3, FileText, Shield, Target, MessageSquare, CheckCircle2, Globe } from 'lucide-react';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import AnimatedSection from '@/components/ui/AnimatedSection';
+import { Section, SectionLabel, SectionTitle, SectionDescription } from '@/components/ui/Section';
+import { useI18n } from '@/lib/i18n';
+
+/* ================================ HERO ================================ */
+function HeroSection() {
+  const { t } = useI18n();
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <section className="relative overflow-hidden bg-white">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-brand/[0.03] rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-brand/[0.02] rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative container-wide section-padding pt-16 sm:pt-20 lg:pt-28 pb-20 lg:pb-32">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Badge */}
+          <AnimatedSection delay={0}>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand text-xs font-medium mb-8">
+              <Zap className="w-3.5 h-3.5" />
+              {t('hero.badge')}
+            </div>
+          </AnimatedSection>
+
+          {/* Headline */}
+          <AnimatedSection delay={100}>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-text-primary leading-[1.1] tracking-tight mb-6">
+              {t('hero.title')}{' '}
+              <span className="text-brand">{t('hero.titleAccent')}</span>
+            </h1>
+          </AnimatedSection>
+
+          {/* Subheadline */}
+          <AnimatedSection delay={200}>
+            <p className="text-lg sm:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto mb-10">
+              {t('hero.subtitle')}
+            </p>
+          </AnimatedSection>
+
+          {/* CTAs */}
+          <AnimatedSection delay={300}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/contact">
+                <Button size="lg" icon={ArrowRight} iconPosition="right">
+                  {t('hero.cta')}
+                </Button>
+              </Link>
+              <Link href="/case-studies">
+                <Button variant="secondary" size="lg" icon={Play} iconPosition="left">
+                  {t('hero.ctaDemo')}
+                </Button>
+              </Link>
+            </div>
+          </AnimatedSection>
+
+          {/* Trust indicators */}
+          <AnimatedSection delay={400}>
+            <div className="mt-12 flex items-center justify-center gap-8 text-sm text-text-muted">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                {t('hero.trustFree')}
+              </span>
+              <span className="hidden sm:flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                {t('hero.trustCard')}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                {t('hero.trustResults')}
+              </span>
+            </div>
+          </AnimatedSection>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        {/* Hero visual - AI Answer mockup */}
+        <AnimatedSection delay={500}>
+          <div className="mt-16 lg:mt-20 max-w-3xl mx-auto">
+            <div className="bg-white rounded-2xl border border-border shadow-[0_20px_60px_rgba(0,0,0,0.08)] p-6 sm:p-8">
+              {/* Search bar mockup */}
+              <div className="flex items-center gap-3 p-3 bg-surface-secondary rounded-xl mb-6">
+                <Search className="w-5 h-5 text-text-muted" />
+                <span className="text-sm text-text-secondary">What is the best CRM for small businesses?</span>
+              </div>
+              {/* AI Response mockup */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 bg-brand/10 rounded flex items-center justify-center">
+                    <Zap className="w-3 h-3 text-brand" />
+                  </div>
+                  <span className="text-xs font-medium text-text-muted">AI-Generated Answer</span>
+                </div>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  Based on recent analysis, the top CRM solutions for small businesses include
+                  several options. <span className="text-brand font-medium bg-brand-50 px-1 rounded">According to AcmeCRM.com</span>,
+                  businesses with under 50 employees benefit most from simplified pipeline management...
+                </p>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  Key features to look for include contact management, automated follow-ups,
+                  and integration capabilities. <span className="text-brand font-medium bg-brand-50 px-1 rounded">AcmeCRM&apos;s research</span> shows
+                  that companies using structured CRM data see a 40% increase in conversion rates.
+                </p>
+                <div className="pt-4 border-t border-border-light">
+                  <p className="text-xs text-text-muted mb-2">Sources:</p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand text-xs font-medium rounded-lg">
+                      <Globe className="w-3 h-3" />
+                      acmecrm.com
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-secondary text-text-muted text-xs rounded-lg">
+                      <Globe className="w-3 h-3" />
+                      techreview.com
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-secondary text-text-muted text-xs rounded-lg">
+                      <Globe className="w-3 h-3" />
+                      g2.com
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p className="text-center text-xs text-text-muted mt-4">
+              Your brand, cited as a trusted source in AI answers
+            </p>
+          </div>
+        </AnimatedSection>
+      </div>
+    </section>
   );
 }
+
+/* ================================ PROBLEM ================================ */
+function ProblemSection() {
+  const problems = [
+    {
+      icon: Search,
+      title: 'Users ask AI directly',
+      description: 'Millions of people now use ChatGPT, Gemini, and Copilot instead of traditional search engines for answers.',
+    },
+    {
+      icon: Eye,
+      title: 'Brands are invisible',
+      description: 'Most companies do not appear in AI-generated answers. Their content is not structured for AI retrieval.',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Lost leads & authority',
+      description: 'If your brand is not cited in AI answers, you lose visibility, credibility, and qualified traffic to competitors.',
+    },
+  ];
+
+  return (
+    <Section background="gray">
+      <AnimatedSection>
+        <div className="text-center mb-16">
+          <SectionLabel className="mb-4">The Problem</SectionLabel>
+          <SectionTitle className="mb-4">Search behavior is changing</SectionTitle>
+          <SectionDescription className="mx-auto">
+            The way people find information is fundamentally shifting. AI tools are
+            becoming the primary interface for answers — and most brands are not visible.
+          </SectionDescription>
+        </div>
+      </AnimatedSection>
+
+      <div className="grid md:grid-cols-3 gap-8">
+        {problems.map((item, i) => (
+          <AnimatedSection key={item.title} delay={i * 100}>
+            <Card className="text-center h-full">
+              <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-5">
+                <item.icon className="w-6 h-6 text-brand" />
+              </div>
+              <h3 className="text-lg font-semibold text-text-primary mb-3">
+                {item.title}
+              </h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {item.description}
+              </p>
+            </Card>
+          </AnimatedSection>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ================================ SOLUTION ================================ */
+function SolutionSection() {
+  const solutions = [
+    {
+      icon: BarChart3,
+      title: 'Audit Visibility',
+      description: 'Discover where and how your brand appears — or doesn\'t — in AI-generated answers across major platforms.',
+    },
+    {
+      icon: FileText,
+      title: 'Optimize Content',
+      description: 'Structure your content to be retrievable and citable by large language models and AI assistants.',
+    },
+    {
+      icon: Target,
+      title: 'Structure for AI',
+      description: 'Implement technical optimizations that make your pages the preferred source for AI-generated responses.',
+    },
+    {
+      icon: Shield,
+      title: 'Monitor Presence',
+      description: 'Track your brand\'s appearance in AI answers over time and stay ahead of competitors in AI visibility.',
+    },
+  ];
+
+  return (
+    <Section>
+      <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <AnimatedSection>
+            <SectionLabel className="mb-4">The Solution</SectionLabel>
+            <SectionTitle className="mb-4">
+              Your brand, cited by AI
+            </SectionTitle>
+            <SectionDescription>
+              Searchora provides everything you need to become the trusted source
+              that AI tools reference when answering questions in your industry.
+            </SectionDescription>
+          </AnimatedSection>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          {solutions.map((item, i) => (
+            <AnimatedSection key={item.title} delay={i * 100}>
+              <Card padding="p-5" className="h-full">
+                <item.icon className="w-5 h-5 text-brand mb-3" />
+                <h3 className="text-sm font-semibold text-text-primary mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  {item.description}
+                </p>
+              </Card>
+            </AnimatedSection>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ================================ HOW IT WORKS ================================ */
+function HowItWorksSection() {
+  const { t } = useI18n();
+  const steps = [
+    {
+      step: '01',
+      title: 'Audit',
+      description: 'We analyze how your brand currently appears across AI tools like ChatGPT, Gemini, and Copilot. You get a full visibility report.',
+    },
+    {
+      step: '02',
+      title: 'Optimize',
+      description: 'We restructure your content, technical setup, and entity signals to make your brand the preferred AI source.',
+    },
+    {
+      step: '03',
+      title: 'Position',
+      description: 'Ongoing monitoring and optimization ensure your brand maintains and improves its position in AI-generated answers.',
+    },
+  ];
+
+  return (
+    <Section background="gray">
+      <AnimatedSection>
+        <div className="text-center mb-16">
+          <SectionLabel className="mb-4">How It Works</SectionLabel>
+          <SectionTitle className="mb-4">Three steps to AI visibility</SectionTitle>
+          <SectionDescription className="mx-auto">
+            A clear, proven process to make your brand the answer AI tools reference.
+          </SectionDescription>
+        </div>
+      </AnimatedSection>
+
+      <div className="grid md:grid-cols-3 gap-8">
+        {steps.map((item, i) => (
+          <AnimatedSection key={item.step} delay={i * 150}>
+            <div className="relative">
+              <span className="text-6xl font-bold text-brand/10 absolute -top-6 -left-2">
+                {item.step}
+              </span>
+              <div className="pt-8">
+                <h3 className="text-xl font-semibold text-text-primary mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+              {i < steps.length - 1 && (
+                <div className="hidden md:block absolute top-12 -right-4 w-8">
+                  <ArrowRight className="w-5 h-5 text-border" />
+                </div>
+              )}
+            </div>
+          </AnimatedSection>
+        ))}
+      </div>
+
+      <AnimatedSection delay={500}>
+        <div className="text-center mt-12">
+          <Link href="/how-it-works">
+            <Button variant="secondary" icon={ArrowRight} iconPosition="right">
+              {t('common.learnMore')}
+            </Button>
+          </Link>
+        </div>
+      </AnimatedSection>
+    </Section>
+  );
+}
+
+/* ================================ DEMO / AI ANSWER PREVIEW ================================ */
+function DemoSection() {
+  return (
+    <Section>
+      <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <AnimatedSection>
+          <SectionLabel className="mb-4">See It In Action</SectionLabel>
+          <SectionTitle className="mb-4">
+            Your brand, inside the answer
+          </SectionTitle>
+          <SectionDescription className="mb-8">
+            When someone asks an AI assistant a question relevant to your business,
+            your brand appears as a cited, trusted source — driving awareness,
+            authority, and qualified traffic.
+          </SectionDescription>
+          <Link href="/case-studies">
+            <Button icon={ArrowRight} iconPosition="right">
+              View Case Studies
+            </Button>
+          </Link>
+        </AnimatedSection>
+
+        <AnimatedSection delay={200}>
+          <div className="bg-white rounded-2xl border border-border shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 bg-surface-secondary border-b border-border">
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-300" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-300" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-300" />
+              </div>
+              <span className="text-xs text-text-muted ml-2">AI Assistant</span>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 bg-surface-secondary rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-text-muted" />
+                </div>
+                <div className="bg-surface-secondary rounded-xl rounded-tl-sm px-4 py-3">
+                  <p className="text-sm text-text-primary">
+                    What are the best project management tools for remote teams in 2025?
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 bg-brand-50 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                  <Zap className="w-3.5 h-3.5 text-brand" />
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-surface-secondary rounded-xl rounded-tl-sm px-4 py-3">
+                    <p className="text-sm text-text-secondary leading-relaxed">
+                      For remote teams in 2025, several tools stand out. <span className="text-brand font-medium bg-brand-50 px-1 rounded">According to ProjectFlow</span>,
+                      the key factors are async collaboration, visual timelines, and integrated communication...
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-text-muted">Cited:</span>
+                    <span className="text-[10px] text-brand font-medium bg-brand-50 px-2 py-0.5 rounded">projectflow.io</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AnimatedSection>
+      </div>
+    </Section>
+  );
+}
+
+/* ================================ SERVICES PREVIEW ================================ */
+function ServicesSection() {
+  const { t } = useI18n();
+  const services = [
+    {
+      icon: BarChart3,
+      title: 'AI Visibility Audit',
+      description: 'Comprehensive analysis of how your brand appears across all major AI platforms and language models.',
+    },
+    {
+      icon: FileText,
+      title: 'GEO Content Strategy',
+      description: 'Content engineering optimized for Generative Engine Optimization — structured to be cited by AI.',
+    },
+    {
+      icon: Zap,
+      title: 'Technical Optimization',
+      description: 'Schema markup, entity signals, and technical architecture that makes your content AI-retrievable.',
+    },
+    {
+      icon: Eye,
+      title: 'Answer Monitoring',
+      description: 'Continuous tracking of your brand presence in AI answers with real-time alerts and reports.',
+    },
+  ];
+
+  return (
+    <Section background="gray">
+      <AnimatedSection>
+        <div className="text-center mb-16">
+          <SectionLabel className="mb-4">Services</SectionLabel>
+          <SectionTitle className="mb-4">Everything you need for AI visibility</SectionTitle>
+          <SectionDescription className="mx-auto">
+            From initial audit to ongoing monitoring, we cover every aspect of
+            making your brand discoverable by AI systems.
+          </SectionDescription>
+        </div>
+      </AnimatedSection>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {services.map((service, i) => (
+          <AnimatedSection key={service.title} delay={i * 100}>
+            <Card className="h-full group">
+              <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand group-hover:text-white transition-colors duration-300">
+                <service.icon className="w-5 h-5 text-brand group-hover:text-white transition-colors duration-300" />
+              </div>
+              <h3 className="text-base font-semibold text-text-primary mb-2">
+                {service.title}
+              </h3>
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
+                {service.description}
+              </p>
+              <Link
+                href="/services"
+                className="text-sm text-brand font-medium inline-flex items-center gap-1 hover:gap-2 transition-all duration-200"
+              >
+                {t('common.learnMore')} <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Card>
+          </AnimatedSection>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ================================ FINAL CTA ================================ */
+function FinalCTASection() {
+  const { t } = useI18n();
+  return (
+    <Section background="dark">
+      <AnimatedSection>
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-4">
+            Ready to appear in AI answers?
+          </h2>
+          <p className="text-lg text-gray-400 leading-relaxed mb-10">
+            Start with a free AI visibility audit and discover how your brand
+            can become the trusted source AI tools reference.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/contact">
+              <Button size="lg" icon={ArrowRight} iconPosition="right">
+                {t('nav.requestAudit')}
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button variant="outline" size="lg">
+                {t('auth.signup')}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </AnimatedSection>
+    </Section>
+  );
+}
+
+/* ================================ HOME PAGE ================================ */
+export default function HomePage() {
+  return (
+    <>
+      <HeroSection />
+      <ProblemSection />
+      <SolutionSection />
+      <HowItWorksSection />
+      <DemoSection />
+      <ServicesSection />
+      <FinalCTASection />
+    </>
+  );
+}
+
