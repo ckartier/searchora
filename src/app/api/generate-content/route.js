@@ -19,7 +19,7 @@ export async function POST(request) {
         }
 
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -41,9 +41,10 @@ ${prompt}`
         );
 
         if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            console.error('Gemini content generation error:', err);
-            return NextResponse.json({ error: 'Content generation failed' }, { status: 500 });
+            const errData = await response.json().catch(() => ({}));
+            console.error('Gemini content generation error:', JSON.stringify(errData));
+            const msg = errData?.error?.message || 'Content generation failed';
+            return NextResponse.json({ error: msg }, { status: 500 });
         }
 
         const data = await response.json();
