@@ -31,6 +31,8 @@ import {
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Card from '@/components/ui/Card';
+import { useAuth } from '@/lib/auth';
+import { saveFullAudit } from '@/lib/firestoreAudit';
 
 const industries = [
     'SaaS / Software', 'E-commerce', 'Financial Services', 'Healthcare',
@@ -81,6 +83,7 @@ export default function AuditPage() {
     });
 
     const router = useRouter();
+    const { user } = useAuth();
     const progressRef = useRef(null);
 
     useEffect(() => {
@@ -126,6 +129,7 @@ export default function AuditPage() {
                     competitors: form.competitors.filter(Boolean),
                     maxPages: 30,
                     maxDepth: 2,
+                    userId: user?.uid || null,
                 }),
             });
 
@@ -141,6 +145,22 @@ export default function AuditPage() {
             log(`✓ AI visibility score: ${data.audit.visibilityScore}/100`, 'success');
             log(`✓ ${data.audit.recommendations?.length || 0} recommendations generated`, 'success');
             log(`✓ ${data.audit.faqSuggestions?.length || 0} FAQ suggestions`, 'success');
+
+            // Save to Firestore
+            if (user?.uid && data.firestore) {
+                log('Saving audit to Firestore...', 'info');
+                try {
+                    await saveFullAudit(user.uid, {
+                        ...data.audit,
+                        firestore: data.firestore,
+                    });
+                    log('✓ Audit saved to your account', 'success');
+                } catch (saveErr) {
+                    console.error('Firestore save error:', saveErr);
+                    log('⚠ Could not save to account (audit still visible)', 'error');
+                }
+            }
+
             log('✓ Audit complete', 'success');
         } catch (err) {
             log(`✗ ${err.message}`, 'error');
@@ -173,7 +193,7 @@ export default function AuditPage() {
                     <div ref={progressRef} className="p-4 max-h-64 overflow-y-auto font-mono text-xs space-y-1.5">
                         {progress.map((p, i) => (
                             <div key={i} className={`flex items-start gap-2 ${p.type === 'success' ? 'text-green-600' :
-                                    p.type === 'error' ? 'text-red-500' : 'text-text-secondary'
+                                p.type === 'error' ? 'text-red-500' : 'text-text-secondary'
                                 }`}>
                                 <span className="text-text-muted shrink-0">{p.time}</span>
                                 <span>{p.msg}</span>
@@ -313,7 +333,7 @@ export default function AuditPage() {
                             {crawl.contentGaps.map((gap, i) => (
                                 <div key={i} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-xl">
                                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${gap.severity === 'high' ? 'bg-red-50 text-red-500' :
-                                            gap.severity === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-100 text-gray-500'
+                                        gap.severity === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-100 text-gray-500'
                                         }`}>{gap.severity}</span>
                                     <div>
                                         <p className="text-sm font-medium text-text-primary">{gap.title}</p>
@@ -362,7 +382,7 @@ export default function AuditPage() {
                                     {rec.details && <p className="text-xs text-text-muted mt-0.5 line-clamp-2">{rec.details}</p>}
                                 </div>
                                 <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 ${rec.priority === 'high' ? 'bg-red-50 text-red-500' :
-                                        rec.priority === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-100 text-gray-500'
+                                    rec.priority === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-100 text-gray-500'
                                     }`}>{rec.priority}</span>
                                 <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-lg shrink-0">{rec.impact}</span>
                             </div>
@@ -385,7 +405,7 @@ export default function AuditPage() {
                                         <span className="text-[10px] font-medium text-brand bg-brand-50 px-1.5 py-0.5 rounded capitalize">{page.type}</span>
                                         {page.priority && (
                                             <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${page.priority === 'high' ? 'bg-red-50 text-red-500' :
-                                                    page.priority === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-50 text-gray-500'
+                                                page.priority === 'medium' ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-50 text-gray-500'
                                                 }`}>{page.priority}</span>
                                         )}
                                     </div>
@@ -477,7 +497,7 @@ export default function AuditPage() {
                             .map((page, i) => (
                                 <div key={i} className="flex items-center gap-3 p-2.5 bg-surface-secondary rounded-xl hover:bg-surface-tertiary transition-colors">
                                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${page.pageScore >= 50 ? 'bg-green-50 text-green-600' :
-                                            page.pageScore >= 25 ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500'
+                                        page.pageScore >= 25 ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500'
                                         }`}>{page.pageScore}</div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs text-text-primary truncate">{(() => { try { return new URL(page.url).pathname || '/'; } catch { return page.url; } })()}</p>
