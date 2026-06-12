@@ -12,36 +12,7 @@ import { NextResponse } from 'next/server';
  * Uses environment variables for API keys (never exposed to frontend).
  */
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const LLM_PROVIDER = process.env.LLM_PROVIDER || 'demo';
-
-async function callLLM(systemPrompt, userPrompt) {
-    if (LLM_PROVIDER === 'openai' && OPENAI_API_KEY) {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: 'gpt-4',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userPrompt },
-                ],
-                temperature: 0.7,
-                max_tokens: 1500,
-            }),
-        });
-
-        if (!response.ok) throw new Error('LLM API error');
-        const data = await response.json();
-        return data.choices[0].message.content;
-    }
-
-    // Demo responses
-    return null;
-}
+import { callLLM } from '@/lib/llm/index.js';
 
 const handlers = {
     'content-recommendations': async (data) => {
@@ -136,7 +107,7 @@ export async function POST(request) {
         return NextResponse.json({
             success: true,
             result,
-            provider: LLM_PROVIDER,
+            provider: process.env.LLM_PROVIDERS || 'auto',
             generatedAt: new Date().toISOString(),
         });
     } catch (error) {

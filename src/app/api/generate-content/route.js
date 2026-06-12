@@ -1,57 +1,35 @@
 import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { NextResponse } from 'next/server';
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+import { callLLM, hasLLMProvider } from '@/lib/llm/index.js';
 
 /**
  * POST /api/generate-content
- * Generate AI-optimized content using Gemini
+ * Generate AI-optimized content using the configured LLM provider chain.
  */
 export async function POST(request) {
     const auth = await requireAuth(request, { maxRequests: 30, windowMs: 60 * 60 * 1000 });
     if (auth.response) return auth.response;
     try {
-        const { prompt, topic, contentType, companyName, industry } = await request.json();
+        const { prompt, topic, contentType } = await request.json();
 
         if (!prompt || !topic) {
             return NextResponse.json({ error: 'Topic and prompt are required' }, { status: 400 });
         }
 
-        if (!GEMINI_API_KEY) {
+        if (!hasLLMProvider()) {
             return NextResponse.json({ error: 'AI service not configured' }, { status: 500 });
         }
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `You are an expert content strategist specializing in creating content optimized for AI citation and retrieval.
-Your content should be structured with clear headings, answer-first formatting, and factual language that AI tools prefer to cite.
-
-${prompt}`
-                        }],
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 4000,
-                    },
-                }),
-            }
+        const content = await callLLM(
+            `You are an expert content strategist specializing in creating content optimized for AI citation and retrieval.
+Your content should be structured with clear headings, answer-first formatting, and factual language that AI tools prefer to cite.`,
+            prompt,
+            { temperature: 0.7, maxTokens: 4000 }
         );
 
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            console.error('Gemini content generation error:', JSON.stringify(errData));
-            const msg = errData?.error?.message || 'Content generation failed';
-            return NextResponse.json({ error: msg }, { status: 500 });
+        if (!content) {
+            return NextResponse.json({ error: 'Content generation failed' }, { status: 502 });
         }
-
-        const data = await response.json();
-        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
         return NextResponse.json({
             success: true,

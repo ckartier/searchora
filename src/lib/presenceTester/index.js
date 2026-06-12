@@ -6,7 +6,7 @@
  * competitor mentions, and paraphrased references.
  */
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+import { callLLM, hasLLMProvider } from '../llm/index.js';
 
 /* ==================== MAIN TESTER ==================== */
 
@@ -226,41 +226,21 @@ async function testSinglePrompt({ prompt, domain, brandTerms, trackedPages, comp
 /* ==================== AI QUERY ==================== */
 
 async function queryAI(prompt) {
-    if (!GEMINI_API_KEY) {
-        console.warn('No Gemini API key — using demo response');
+    if (!hasLLMProvider()) {
+        console.warn('No LLM provider configured — using demo response');
         return null;
     }
 
-    try {
-        const systemInstructions = `You are a helpful AI assistant answering user questions. 
-When answering, if relevant, mention specific websites, brands, products, or services by name. 
+    const systemInstructions = `You are a helpful AI assistant answering user questions.
+When answering, if relevant, mention specific websites, brands, products, or services by name.
 Include URL references when you know them. Be specific and cite sources when possible.
 Answer naturally and comprehensively.`;
 
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: `${systemInstructions}\n\nUser question: ${prompt}` }],
-                    }],
-                    generationConfig: {
-                        temperature: 0.8,
-                        maxOutputTokens: 1500,
-                    },
-                }),
-            }
-        );
-
-        if (!response.ok) {
-            console.error('Gemini API error:', await response.text());
-            return null;
-        }
-
-        const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    try {
+        return await callLLM(systemInstructions, `User question: ${prompt}`, {
+            temperature: 0.8,
+            maxTokens: 1500,
+        });
     } catch (err) {
         console.error('AI query failed:', err.message);
         return null;

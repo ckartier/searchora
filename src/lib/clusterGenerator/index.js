@@ -6,7 +6,7 @@
  * publishing order, and AI answer value assessment.
  */
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+import { callLLM, hasLLMProvider } from '../llm/index.js';
 
 /* ==================== MAIN GENERATOR ==================== */
 
@@ -188,8 +188,8 @@ function buildContext({ domain, companyName, industry, themes, trackedPrompts, c
 /* ==================== AI CLUSTER GENERATION ==================== */
 
 async function generateClustersViaAI(context) {
-    if (!GEMINI_API_KEY) {
-        console.warn('No API key — returning demo clusters');
+    if (!hasLLMProvider()) {
+        console.warn('No LLM provider configured — returning demo clusters');
         return getDemoClusters();
     }
 
@@ -243,33 +243,16 @@ Return ONLY valid JSON matching this exact structure:
 Generate 1 cluster per theme. Each cluster should have 4-7 supporting pages.`;
 
     try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: `${systemPrompt}\n\n--- CONTEXT ---\n${context}\n\nGenerate clusters now. Return ONLY the JSON object.` }],
-                    }],
-                    generationConfig: {
-                        temperature: 0.6,
-                        maxOutputTokens: 8000,
-                        responseMimeType: 'application/json',
-                    },
-                }),
-            }
+        const text = await callLLM(
+            systemPrompt,
+            `--- CONTEXT ---\n${context}\n\nGenerate clusters now. Return ONLY the JSON object.`,
+            { temperature: 0.6, maxTokens: 8000, json: true }
         );
-
-        if (!response.ok) {
-            console.error('Gemini cluster generation error:', await response.text());
+        if (!text) {
+            console.error('All LLM providers failed for cluster generation');
             return getDemoClusters();
         }
 
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-        // Parse JSON from response
         const parsed = JSON.parse(text);
         return parsed.clusters || [];
     } catch (err) {
