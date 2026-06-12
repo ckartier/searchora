@@ -45,14 +45,19 @@ export function AuthProvider({ children }) {
         const result = await createUserWithEmailAndPassword(auth, email, password);
         setUser(result.user);
         await updateProfile(result.user, { displayName });
-        await setDoc(doc(db, 'users', result.user.uid), {
-            email,
-            displayName,
-            companyName: companyName || '',
-            plan: 'starter',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-        });
+        try {
+            await setDoc(doc(db, 'users', result.user.uid), {
+                email,
+                displayName,
+                companyName: companyName || '',
+                plan: 'starter',
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            });
+        } catch (err) {
+            // The Auth account already exists; a profile write must not report signup failure.
+            console.error('Error creating user profile:', err);
+        }
         return result;
     };
 
