@@ -12,26 +12,26 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth';
 import {
-    collection, addDoc, getDocs, query, where, serverTimestamp,
+    collection, addDoc, getDocs, doc, getDoc, query, where, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 /* ==================== PAGE TYPE ICONS ==================== */
 const pageTypeConfig = {
-    guide: { icon: BookOpen, color: 'text-blue-600 bg-blue-50', label: 'Guide' },
-    comparison: { icon: Scale, color: 'text-purple-600 bg-purple-50', label: 'Comparison' },
-    definition: { icon: FileText, color: 'text-teal-600 bg-teal-50', label: 'Definition' },
-    faq: { icon: HelpCircle, color: 'text-orange-600 bg-orange-50', label: 'FAQ' },
-    'use-case': { icon: Target, color: 'text-green-600 bg-green-50', label: 'Use Case' },
-    decision: { icon: Star, color: 'text-yellow-600 bg-yellow-50', label: 'Decision' },
+    guide: { icon: BookOpen, color: 'text-blue-600', label: 'Guide' },
+    comparison: { icon: Scale, color: 'text-purple-600', label: 'Comparison' },
+    definition: { icon: FileText, color: 'text-teal-600', label: 'Definition' },
+    faq: { icon: HelpCircle, color: 'text-amber-700', label: 'FAQ' },
+    'use-case': { icon: Target, color: 'text-green-600', label: 'Use Case' },
+    decision: { icon: Star, color: 'text-yellow-600', label: 'Decision' },
 };
 
 /* ==================== PRIORITY BADGE ==================== */
 function PriorityBadge({ priority }) {
     const colors = {
-        high: 'bg-red-50 text-red-600 border-red-200',
-        medium: 'bg-yellow-50 text-yellow-600 border-yellow-200',
-        low: 'bg-gray-50 text-gray-500 border-gray-200',
+        high: 'text-red-600 border-red-300',
+        medium: 'text-yellow-600 border-yellow-300',
+        low: 'text-text-muted border-border',
     };
     return (
         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${colors[priority] || colors.medium}`}>
@@ -55,15 +55,13 @@ function ClusterCard({ cluster, index }) {
             <div className="p-5 border-b border-border/50">
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
-                            <Layers className="w-5 h-5 text-brand" />
-                        </div>
+                        <Layers className="w-5 h-5 text-brand shrink-0" />
                         <div>
                             <div className="flex items-center gap-2">
-                                <h3 className="text-base font-bold text-text-primary capitalize">{cluster.theme}</h3>
+                                <h3 className="text-lg font-bold text-text-primary capitalize">{cluster.theme}</h3>
                                 <PriorityBadge priority={cluster.priority} />
                             </div>
-                            <p className="text-xs text-text-muted mt-0.5">
+                            <p className="text-sm text-text-muted mt-0.5">
                                 {1 + (cluster.supportingPages?.length || 0)} pages · Cluster #{index + 1}
                             </p>
                         </div>
@@ -77,57 +75,55 @@ function ClusterCard({ cluster, index }) {
                 {/* Why this matters */}
                 <div className="mt-3 grid sm:grid-cols-3 gap-2">
                     <div className="p-2 bg-surface-secondary rounded-lg">
-                        <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider">Strategy</p>
-                        <p className="text-xs text-text-secondary mt-0.5">{cluster.reason}</p>
+                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">Strategy</p>
+                        <p className="text-sm text-text-secondary mt-0.5">{cluster.reason}</p>
                     </div>
                     <div className="p-2 bg-surface-secondary rounded-lg">
-                        <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider">AI Value</p>
-                        <p className="text-xs text-text-secondary mt-0.5">{cluster.aiValue}</p>
+                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">AI Value</p>
+                        <p className="text-sm text-text-secondary mt-0.5">{cluster.aiValue}</p>
                     </div>
                     <div className="p-2 bg-surface-secondary rounded-lg">
-                        <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider">Commercial</p>
-                        <p className="text-xs text-text-secondary mt-0.5">{cluster.commercialRelevance || '—'}</p>
+                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">Commercial</p>
+                        <p className="text-sm text-text-secondary mt-0.5">{cluster.commercialRelevance || '—'}</p>
                     </div>
                 </div>
             </div>
 
             {/* Pillar Page */}
-            <div className="px-5 py-3 bg-brand-50/30 border-b border-border/50">
+            <div className="px-5 py-3 border-b border-border/50">
                 <div className="flex items-center gap-3">
                     <Crown className="w-4 h-4 text-brand shrink-0" />
                     <div className="flex-1">
-                        <p className="text-[10px] font-bold text-brand uppercase tracking-wider">Pillar Page</p>
-                        <p className="text-sm font-semibold text-text-primary">{cluster.pillarPage?.title}</p>
+                        <p className="text-xs font-bold text-brand uppercase tracking-wider">Pillar Page</p>
+                        <p className="text-base font-semibold text-text-primary">{cluster.pillarPage?.title}</p>
                         {cluster.pillarPage?.description && (
-                            <p className="text-xs text-text-muted mt-0.5">{cluster.pillarPage.description}</p>
+                            <p className="text-sm text-text-muted mt-0.5">{cluster.pillarPage.description}</p>
                         )}
                     </div>
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${pillarType.color}`}>{pillarType.label}</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border border-current/20 ${pillarType.color}`}>{pillarType.label}</span>
                 </div>
             </div>
 
             {/* Supporting Pages (always visible) */}
             <div className="px-5 py-3">
-                <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-2">Supporting Pages</p>
+                <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Supporting Pages</p>
                 <div className="space-y-1.5">
                     {(cluster.supportingPages || []).map((page, i) => {
                         const typeConfig = pageTypeConfig[page.type] || pageTypeConfig.guide;
                         const TypeIcon = typeConfig.icon;
                         return (
                             <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-secondary transition-colors">
-                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${typeConfig.color}`}>
-                                    <TypeIcon className="w-3.5 h-3.5" />
-                                </div>
+                                <TypeIcon className={`w-4 h-4 shrink-0 ${typeConfig.color}`} />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-text-primary">{page.title}</p>
+                                    <p className="text-base text-text-primary">{page.title}</p>
                                     {expanded && page.description && (
-                                        <p className="text-xs text-text-muted mt-0.5">{page.description}</p>
+                                        <p className="text-sm text-text-muted mt-0.5">{page.description}</p>
                                     )}
                                     {expanded && page.role && (
-                                        <p className="text-[10px] text-blue-500 mt-0.5">→ {page.role}</p>
+                                        <p className="text-xs text-blue-500 mt-0.5">→ {page.role}</p>
                                     )}
                                 </div>
-                                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${typeConfig.color}`}>{typeConfig.label}</span>
+                                <span className={`text-xs font-medium ${typeConfig.color}`}>{typeConfig.label}</span>
                             </div>
                         );
                     })}
@@ -269,7 +265,7 @@ export default function ClustersPage() {
             const data = await resp.json();
             setResult(data.data);
 
-            // Save to Firestore
+            // Save FULL data to Firestore
             if (user?.uid && data.data?.clusters) {
                 try {
                     await addDoc(collection(db, 'content_clusters'), {
@@ -280,14 +276,21 @@ export default function ClustersPage() {
                         themes: data.data.inputThemes || [],
                         clusterCount: data.data.clusterCount,
                         totalPages: data.data.totalPages,
-                        clusters: data.data.clusters.map(c => ({
-                            theme: c.theme,
-                            priority: c.priority,
-                            pillarTitle: c.pillarPage?.title || '',
-                            pageCount: 1 + (c.supportingPages?.length || 0),
-                        })),
+                        fullData: data.data,
                         createdAt: serverTimestamp(),
                     });
+                    // Reload history
+                    const q = query(collection(db, 'content_clusters'), where('userId', '==', user.uid));
+                    const snap = await getDocs(q);
+                    const items = snap.docs
+                        .map((d) => ({ id: d.id, ...d.data() }))
+                        .sort((a, b) => {
+                            const ta = a.createdAt?.toDate?.() || new Date(a.createdAt || 0);
+                            const tb = b.createdAt?.toDate?.() || new Date(b.createdAt || 0);
+                            return tb - ta;
+                        })
+                        .slice(0, 10);
+                    setHistory(items);
                 } catch (saveErr) {
                     console.error('Failed to save clusters:', saveErr);
                 }
@@ -298,27 +301,42 @@ export default function ClustersPage() {
         setLoading(false);
     };
 
+    /* ==================== LOAD FROM HISTORY ==================== */
+    const loadFromHistory = (item) => {
+        if (item.fullData) {
+            setResult(item.fullData);
+        } else {
+            // Legacy items without fullData — reconstruct minimal view
+            setResult({
+                companyName: item.companyName,
+                website: item.domain,
+                clusterCount: item.clusterCount,
+                totalPages: item.totalPages,
+                clusters: item.clusters || [],
+            });
+        }
+    };
+
     /* ==================== LOADING ==================== */
     if (loading) {
         return (
-            <div className="max-w-2xl mx-auto space-y-6 py-10">
+            <div className="max-w-md mx-auto space-y-6 py-12 animate-fade-in">
                 <div className="text-center">
-                    <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <div className="animate-spin"><Layers className="w-8 h-8 text-brand" /></div>
+                    <div className="orbit-loader mx-auto mb-6">
+                        <div className="dot" />
+                        <div className="dot" />
+                        <div className="dot" />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary mb-2">Generating Clusters...</h2>
-                    <p className="text-sm text-text-secondary">
-                        AI is analyzing your themes and creating strategic content clusters
+                    <h2 className="text-xl font-bold text-text-primary mb-1">Generating clusters</h2>
+                    <p className="text-sm text-text-muted">
+                        {companyName || domain} · {themes.filter(Boolean).length} themes
                     </p>
                 </div>
-                <Card hover={false} padding="p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-brand animate-pulse" />
-                        <span className="text-sm text-text-secondary">
-                            Building pillar pages, supporting content, linking plans and publishing orders...
-                        </span>
-                    </div>
-                </Card>
+                <div className="progress-bar-indeterminate rounded-full" />
+                <div className="flex items-center justify-center gap-2 text-text-muted">
+                    <span className="text-sm">Building pillar pages and linking plans</span>
+                    <span className="typing-cursor" />
+                </div>
             </div>
         );
     }
@@ -344,21 +362,21 @@ export default function ClustersPage() {
                 {/* Summary cards */}
                 <div className="grid grid-cols-3 gap-4">
                     <Card hover={false} padding="p-4">
-                        <Layers className="w-5 h-5 text-brand mb-2" />
+                        <Layers className="w-4 h-4 text-brand mb-2" />
                         <div className="text-2xl font-bold text-text-primary">{result.clusterCount}</div>
-                        <div className="text-[10px] text-text-muted">Clusters</div>
+                        <div className="text-xs text-text-muted">Clusters</div>
                     </Card>
                     <Card hover={false} padding="p-4">
-                        <FileText className="w-5 h-5 text-blue-500 mb-2" />
+                        <FileText className="w-4 h-4 text-blue-500 mb-2" />
                         <div className="text-2xl font-bold text-text-primary">{result.totalPages}</div>
-                        <div className="text-[10px] text-text-muted">Total Pages</div>
+                        <div className="text-xs text-text-muted">Total Pages</div>
                     </Card>
                     <Card hover={false} padding="p-4">
-                        <Zap className="w-5 h-5 text-green-500 mb-2" />
+                        <Zap className="w-4 h-4 text-green-500 mb-2" />
                         <div className="text-2xl font-bold text-text-primary">
                             {result.clusters?.filter(c => c.priority === 'high').length || 0}
                         </div>
-                        <div className="text-[10px] text-text-muted">High Priority</div>
+                        <div className="text-xs text-text-muted">High Priority</div>
                     </Card>
                 </div>
 
@@ -378,7 +396,7 @@ export default function ClustersPage() {
             <div>
                 <h1 className="text-2xl font-bold text-text-primary">Content Clusters</h1>
                 <p className="text-sm text-text-secondary mt-1">
-                    Generate strategic topic clusters to boost your brand's AI answer visibility.
+                    Generate strategic topic clusters to boost your brand&apos;s AI answer visibility.
                 </p>
             </div>
 
@@ -459,25 +477,28 @@ export default function ClustersPage() {
                     </Button>
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">{error}</div>
+                        <div className="border border-red-300 rounded-xl px-4 py-3 text-sm text-red-600">{error}</div>
                     )}
 
                     {/* History */}
                     {history.length > 0 && (
                         <Card hover={false} padding="p-5">
-                            <h3 className="text-sm font-semibold text-text-primary mb-3">Recent Generations</h3>
+                            <h3 className="text-base font-semibold text-text-primary mb-3">Recent Generations</h3>
                             <div className="space-y-2">
                                 {history.map((item) => (
-                                    <div key={item.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
+                                    <div key={item.id}
+                                        className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl cursor-pointer hover:bg-surface-tertiary transition-colors"
+                                        onClick={() => loadFromHistory(item)}>
                                         <div className="flex items-center gap-3">
                                             <Layers className="w-4 h-4 text-brand shrink-0" />
                                             <div>
-                                                <p className="text-sm text-text-primary">{item.companyName || item.domain}</p>
-                                                <p className="text-[10px] text-text-muted">
+                                                <p className="text-sm font-medium text-text-primary">{item.companyName || item.domain}</p>
+                                                <p className="text-xs text-text-muted">
                                                     {item.clusterCount} cluster{item.clusterCount > 1 ? 's' : ''} · {item.totalPages} pages
                                                 </p>
                                             </div>
                                         </div>
+                                        <ArrowRight className="w-4 h-4 text-text-muted" />
                                     </div>
                                 ))}
                             </div>

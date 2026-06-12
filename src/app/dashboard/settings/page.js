@@ -144,7 +144,7 @@ export default function SettingsPage() {
             }
         }
         loadData();
-    }, [user?.uid]);
+    }, [user?.uid, user?.displayName, user?.email]);
 
     /* ==================== SAVE PROFILE ==================== */
     const saveProfile = async () => {
@@ -269,11 +269,9 @@ export default function SettingsPage() {
                     <Card hover={false} padding="p-6">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
-                                    <Crown className="w-5 h-5 text-brand" />
-                                </div>
+                                <Crown className="w-5 h-5 text-brand shrink-0" />
                                 <div>
-                                    <h3 className="text-sm font-semibold text-text-primary">Current Plan: {currentPlan.name}</h3>
+                                    <h3 className="text-base font-semibold text-text-primary">Current Plan: {currentPlan.name}</h3>
                                     <p className="text-xs text-text-muted">
                                         {subscription?.status === 'active' ? 'Active' : 'Inactive'}
                                         {subscription?.startedAt && ` · Since ${new Date(subscription.startedAt).toLocaleDateString()}`}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -15,9 +15,15 @@ import Button from '@/components/ui/Button';
 export default function DashboardLayout({ children }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { user, signOut } = useAuth();
+    const { user, loading, signOut } = useAuth();
     const { t } = useI18n();
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+    useEffect(() => {
+        if (!loading && !user) {
+            router.replace('/login');
+        }
+    }, [loading, router, user]);
 
     const navItems = [
         { label: t('dashboard.overview'), href: '/dashboard', icon: LayoutDashboard },
@@ -42,11 +48,23 @@ export default function DashboardLayout({ children }) {
     const currentNav = navItems.find((n) => isActive(n.href));
     const pageTitle = currentNav?.label || 'Dashboard';
 
+    if (loading || !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-surface-secondary">
+                <div className="orbit-loader" aria-label="Loading dashboard">
+                    <div className="dot" />
+                    <div className="dot" />
+                    <div className="dot" />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-surface-secondary" style={{ paddingTop: 0 }}>
 
             {/* ===== Fixed top bar with logo ===== */}
-            <div className="bg-white border-b border-border sticky top-0 z-50">
+            <div className="bg-surface-secondary/80 backdrop-blur-lg border-b border-border/40 sticky top-0 z-50">
                 <div className="w-full px-4 sm:px-6 lg:px-10">
                     <div className="flex items-center justify-between h-16">
                         {/* Left — Logo + mobile toggle */}
@@ -61,7 +79,7 @@ export default function DashboardLayout({ children }) {
 
                             {/* Logo */}
                             <Link href="/" className="flex items-center gap-2.5">
-                                <Image src="/logo.png" alt="Searchora" width={32} height={32} />
+                                <Image src="/logo.png" alt="Searchora" width={28} height={32} />
                                 <span className="text-lg font-bold text-text-primary tracking-tight hidden sm:inline">
                                     Searchora
                                 </span>
@@ -91,7 +109,7 @@ export default function DashboardLayout({ children }) {
                                     <p className="text-sm font-medium text-text-primary leading-tight">
                                         {user?.displayName || 'User'}
                                     </p>
-                                    <p className="text-[10px] text-text-muted">{user?.email}</p>
+                                    <p className="text-xs text-text-muted">{user?.email}</p>
                                 </div>
                             </div>
 

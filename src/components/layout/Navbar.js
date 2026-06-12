@@ -31,10 +31,6 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    useEffect(() => {
-        setIsOpen(false);
-    }, [pathname]);
-
     if (isDashboard) return null;
 
     return (
@@ -48,8 +44,8 @@ export default function Navbar() {
                 <div className="container-wide section-padding">
                     <div className="flex items-center justify-between h-16 lg:h-20">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-2 group">
-                            <Image src="/logo.png" alt="Searchora" width={36} height={36} className="group-hover:scale-105 transition-transform duration-300" />
+                        <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 group">
+                            <Image src="/logo.png" alt="Searchora" width={31} height={36} className="group-hover:scale-105 transition-transform duration-300" />
                             <span className="text-xl font-bold text-text-primary tracking-tight">
                                 Searchora
                             </span>
@@ -108,6 +104,7 @@ export default function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
+                                    onClick={() => setIsOpen(false)}
                                     className={`block px-4 py-3 text-sm font-medium rounded-xl transition-colors ${pathname === link.href
                                         ? 'text-brand bg-brand-light'
                                         : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary'
@@ -121,12 +118,12 @@ export default function Navbar() {
                             <LanguageSwitcher />
                         </div>
                         <div className="mt-4 pt-4 border-t border-border space-y-3">
-                            <Link href="/login" className="block">
+                            <Link href="/login" onClick={() => setIsOpen(false)} className="block">
                                 <Button variant="secondary" size="md" className="w-full">
                                     {t('nav.login')}
                                 </Button>
                             </Link>
-                            <Link href="/contact" className="block">
+                            <Link href="/contact" onClick={() => setIsOpen(false)} className="block">
                                 <Button size="md" className="w-full" icon={ArrowRight} iconPosition="right">
                                     {t('nav.requestAudit')}
                                 </Button>

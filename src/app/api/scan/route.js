@@ -1,4 +1,5 @@
 import { runSecurityScan } from '@/lib/scanner';
+import { assertSafePublicUrl } from '@/lib/security/urlSafety';
 
 export async function POST(req) {
     try {
@@ -6,6 +7,11 @@ export async function POST(req) {
 
         if (!url) {
             return Response.json({ error: 'URL is required' }, { status: 400 });
+        }
+        try {
+            await assertSafePublicUrl(url.startsWith('http') ? url : `https://${url}`);
+        } catch {
+            return Response.json({ error: 'Invalid or restricted URL' }, { status: 400 });
         }
 
         const results = await runSecurityScan(url);

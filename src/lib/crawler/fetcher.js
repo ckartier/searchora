@@ -2,6 +2,8 @@
  * Page Fetcher — fetches HTML with timeout, redirect handling, status codes
  */
 
+import { safeFetch } from '../security/urlSafety.js';
+
 const DEFAULT_TIMEOUT = 15000; // 15s
 const USER_AGENT =
     'SearchoraBot/1.0 (+https://searchora.com/bot; AI Visibility Audit)';
@@ -19,7 +21,7 @@ export async function fetchPage(url, options = {}) {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-        const response = await fetch(url, {
+        const response = await safeFetch(url, {
             method: 'GET',
             headers: {
                 'User-Agent': USER_AGENT,
@@ -83,7 +85,7 @@ export async function fetchPage(url, options = {}) {
 export async function fetchRobotsTxt(baseUrl) {
     try {
         const robotsUrl = new URL('/robots.txt', baseUrl).toString();
-        const response = await fetch(robotsUrl, {
+        const response = await safeFetch(robotsUrl, {
             headers: { 'User-Agent': USER_AGENT },
             signal: AbortSignal.timeout(10000),
         });

@@ -5,6 +5,8 @@
  * Checks: SSL, security headers, exposed files, common misconfigs, technology detection.
  */
 
+import { safeFetch } from '../security/urlSafety.js';
+
 /**
  * Run a full vulnerability scan on a website
  */
@@ -100,7 +102,7 @@ async function checkSSL(baseUrl) {
 
     try {
         const httpsUrl = baseUrl.replace('http://', 'https://');
-        const resp = await fetch(httpsUrl, {
+        const resp = await safeFetch(httpsUrl, {
             method: 'HEAD',
             redirect: 'follow',
             signal: AbortSignal.timeout(10000),
@@ -118,7 +120,7 @@ async function checkSSL(baseUrl) {
 
         // Check HTTPS redirect
         try {
-            const httpResp = await fetch(baseUrl.replace('https://', 'http://'), {
+            const httpResp = await safeFetch(baseUrl.replace('https://', 'http://'), {
                 method: 'HEAD',
                 redirect: 'manual',
                 signal: AbortSignal.timeout(5000),
@@ -168,7 +170,7 @@ async function checkSecurityHeaders(baseUrl) {
     const checks = [];
 
     try {
-        const resp = await fetch(baseUrl, {
+        const resp = await safeFetch(baseUrl, {
             method: 'GET',
             redirect: 'follow',
             signal: AbortSignal.timeout(10000),
@@ -331,7 +333,7 @@ async function checkExposedFiles(baseUrl) {
     await Promise.allSettled(
         exposedPaths.map(async ({ path, name, severity, expectPresent }) => {
             try {
-                const resp = await fetch(`${baseUrl}${path}`, {
+                const resp = await safeFetch(`${baseUrl}${path}`, {
                     method: 'HEAD',
                     redirect: 'follow',
                     signal: AbortSignal.timeout(5000),
@@ -389,7 +391,7 @@ async function detectTechnologies(baseUrl) {
     const checks = [];
 
     try {
-        const resp = await fetch(baseUrl, {
+        const resp = await safeFetch(baseUrl, {
             redirect: 'follow',
             signal: AbortSignal.timeout(10000),
             headers: { 'User-Agent': 'SearchoraSecurityScanner/1.0' },
@@ -470,7 +472,7 @@ async function checkMisconfigurations(baseUrl) {
     const checks = [];
 
     try {
-        const resp = await fetch(baseUrl, {
+        const resp = await safeFetch(baseUrl, {
             redirect: 'follow',
             signal: AbortSignal.timeout(10000),
             headers: { 'User-Agent': 'SearchoraSecurityScanner/1.0' },

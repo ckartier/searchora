@@ -91,7 +91,7 @@ export default function ReportsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                <div className="orbit-loader"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
             </div>
         );
     }
@@ -115,9 +115,7 @@ export default function ReportsPage() {
                         {/* Score */}
                         <Card hover={false} padding="p-6">
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center">
-                                    <span className="text-2xl font-bold text-brand">{selectedReport.score}%</span>
-                                </div>
+                                <span className="text-3xl font-bold text-brand">{selectedReport.score}%</span>
                                 <div>
                                     <h3 className="font-semibold text-text-primary">{selectedReport.website}</h3>
                                     <p className="text-sm text-text-muted">{selectedReport.pagesCrawled} pages crawled</p>
@@ -228,11 +226,9 @@ export default function ReportsPage() {
 
             {reports.length === 0 ? (
                 <Card hover={false} padding="p-12" className="text-center">
-                    <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <FileText className="w-7 h-7 text-brand" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-text-primary mb-2">No reports yet</h3>
-                    <p className="text-sm text-text-secondary max-w-md mx-auto mb-6">
+                    <FileText className="w-7 h-7 text-brand mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-text-primary mb-2">No reports yet</h3>
+                    <p className="text-base text-text-secondary max-w-md mx-auto mb-6">
                         Run an audit or a presence test to generate your first report.
                     </p>
                     <Link href="/dashboard/audit">

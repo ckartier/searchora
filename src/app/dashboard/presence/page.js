@@ -155,40 +155,40 @@ export default function PresencePage() {
     /* ==================== LOADING STATE ==================== */
     if (loading) {
         return (
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="max-w-md mx-auto space-y-6 py-8 animate-fade-in">
                 <div className="text-center">
-                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <div className="animate-spin"><Search className="w-8 h-8 text-blue-600" /></div>
+                    <div className="orbit-loader mx-auto mb-6">
+                        <div className="dot" />
+                        <div className="dot" />
+                        <div className="dot" />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary mb-2">
-                        Testing AI Presence...
+                    <h2 className="text-xl font-bold text-text-primary mb-1">
+                        Testing AI Presence
                     </h2>
-                    <p className="text-sm text-text-secondary">
-                        Sending prompts to AI and analyzing responses for your brand
+                    <p className="text-sm text-text-muted">
+                        {progress?.message || 'Sending prompts to AI...'}
                     </p>
                 </div>
-                <Card hover={false} padding="p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                        <span className="text-sm text-text-secondary">
-                            {progress?.message || 'Processing...'}
-                        </span>
-                    </div>
-                    {progress?.total > 0 && (
-                        <div className="mt-3">
-                            <div className="flex justify-between text-xs text-text-muted mb-1">
-                                <span>Progress</span>
-                                <span>{progress.current}/{progress.total}</span>
-                            </div>
-                            <div className="w-full bg-surface-secondary rounded-full h-2">
-                                <div
-                                    className="bg-blue-500 rounded-full h-2 transition-all duration-300"
-                                    style={{ width: `${(progress.current / progress.total) * 100}%` }}
-                                />
-                            </div>
+                {progress?.total > 0 ? (
+                    <div>
+                        <div className="flex justify-between text-sm text-text-muted mb-2">
+                            <span>Progress</span>
+                            <span>{progress.current}/{progress.total}</span>
                         </div>
-                    )}
-                </Card>
+                        <div className="w-full bg-surface-secondary rounded-full h-2">
+                            <div
+                                className="bg-brand rounded-full h-2 transition-all duration-500"
+                                style={{ width: `${(progress.current / progress.total) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <div className="progress-bar-indeterminate rounded-full" />
+                )}
+                <div className="flex items-center justify-center gap-2 text-text-muted">
+                    <span className="text-sm">Analyzing AI responses for brand mentions</span>
+                    <span className="typing-cursor" />
+                </div>
             </div>
         );
     }
@@ -538,7 +538,7 @@ function PromptResult({ result: r, index }) {
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-text-primary truncate">
-                        "{r.prompt}"
+                        &quot;{r.prompt}&quot;
                     </p>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         {r.clientMentioned && (

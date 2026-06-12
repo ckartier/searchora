@@ -18,6 +18,7 @@ export function I18nProvider({ children }) {
     useEffect(() => {
         const saved = typeof window !== 'undefined' ? localStorage.getItem('searchora-lang') : null;
         if (saved && translations[saved]) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLang(saved);
         }
     }, []);

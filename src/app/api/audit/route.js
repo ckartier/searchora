@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { runFullAudit, buildFirestoreAudit, buildFirestoreSubDocs } from '@/lib/audit/index.js';
+import { assertSafePublicUrl } from '@/lib/security/urlSafety.js';
 
 /**
  * POST /api/audit
@@ -42,9 +43,10 @@ export async function POST(request) {
             validUrl = new URL(
                 websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`
             );
+            await assertSafePublicUrl(validUrl.toString());
         } catch {
             return NextResponse.json(
-                { error: 'Invalid URL format' },
+                { error: 'Invalid or restricted URL' },
                 { status: 400 }
             );
         }

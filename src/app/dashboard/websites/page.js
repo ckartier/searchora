@@ -45,7 +45,7 @@ export default function WebsitesPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                <div className="orbit-loader"><div className="dot"></div><div className="dot"></div><div className="dot"></div></div>
             </div>
         );
     }
@@ -66,13 +66,11 @@ export default function WebsitesPage() {
 
             {websites.length === 0 ? (
                 <Card hover={false} padding="p-12" className="text-center">
-                    <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <Globe className="w-7 h-7 text-brand" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-text-primary mb-2">
+                    <Globe className="w-7 h-7 text-brand mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-text-primary mb-2">
                         {t('dashboard.runNewAudit')}
                     </h3>
-                    <p className="text-sm text-text-secondary max-w-md mx-auto mb-6">
+                    <p className="text-base text-text-secondary max-w-md mx-auto mb-6">
                         {t('audit.subtitle')}
                     </p>
                     <Link href="/dashboard/audit">
@@ -85,9 +83,7 @@ export default function WebsitesPage() {
                         <Card key={site.domain} hover={false} padding="p-6">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
-                                        <Globe className="w-5 h-5 text-brand" />
-                                    </div>
+                                    <Globe className="w-5 h-5 text-brand shrink-0" />
                                     <div>
                                         <h3 className="text-base font-semibold text-text-primary">{site.domain}</h3>
                                         <span className="text-xs text-text-muted">{site.lastScan}</span>

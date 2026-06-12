@@ -172,36 +172,77 @@ export default function AuditPage() {
 
     /* ==================== LOADING STATE ==================== */
     if (loading) {
+        const phases = [
+            { label: 'Crawling pages', icon: Globe },
+            { label: 'Extracting content', icon: FileText },
+            { label: 'Scoring AI-readiness', icon: BarChart3 },
+            { label: 'AI analysis', icon: Sparkles },
+        ];
+        const currentPhase = Math.min(progress.length, phases.length - 1);
+
         return (
-            <div className="max-w-2xl mx-auto space-y-6">
-                <div className="text-center">
-                    <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <div className="animate-spin"><Zap className="w-8 h-8 text-brand" /></div>
+            <div className="max-w-xl mx-auto space-y-8 py-6 animate-fade-in">
+                {/* Header */}
+                <div className="text-center animate-fade-in-up">
+                    <div className="orbit-loader mx-auto mb-6">
+                        <div className="dot" />
+                        <div className="dot" />
+                        <div className="dot" />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary mb-2">
-                        Running audit pipeline...
+                    <h2 className="text-xl font-bold text-text-primary mb-1">
+                        Analyzing {form.companyName || form.websiteUrl}
                     </h2>
-                    <p className="text-sm text-text-secondary">
-                        Crawling, extracting, scoring, and analyzing with AI
+                    <p className="text-sm text-text-muted">
+                        {phases[currentPhase]?.label}...
                     </p>
                 </div>
+
+                {/* Progress bar */}
+                <div className="progress-bar-indeterminate rounded-full" />
+
+                {/* Phase stepper */}
+                <div className="flex items-center justify-between px-4">
+                    {phases.map((phase, i) => {
+                        const Icon = phase.icon;
+                        const done = i < currentPhase;
+                        const active = i === currentPhase;
+                        return (
+                            <div key={i} className="flex flex-col items-center gap-2">
+                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-500 ${done ? 'bg-green-50 text-green-600' :
+                                    active ? 'bg-brand-50 text-brand' :
+                                        'bg-surface-secondary text-text-muted'
+                                    }`}>
+                                    {done ? <CheckCircle2 className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                                </div>
+                                <span className={`text-[10px] font-medium ${active ? 'text-text-primary' : 'text-text-muted'}`}>
+                                    {phase.label}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Live console */}
                 <Card hover={false} padding="p-0" className="overflow-hidden">
-                    <div className="px-4 py-3 bg-surface-secondary border-b border-border flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-xs font-medium text-text-primary">Progress</span>
+                    <div className="px-4 py-2.5 border-b border-border/50 flex items-center gap-2">
+                        <div className="flex gap-1">
+                            <div className="w-2 h-2 rounded-full bg-red-400/60" />
+                            <div className="w-2 h-2 rounded-full bg-yellow-400/60" />
+                            <div className="w-2 h-2 rounded-full bg-green-400/60" />
+                        </div>
+                        <span className="text-[10px] font-medium text-text-muted ml-2">Pipeline</span>
                     </div>
-                    <div ref={progressRef} className="p-4 max-h-64 overflow-y-auto font-mono text-xs space-y-1.5">
+                    <div ref={progressRef} className="p-4 max-h-48 overflow-y-auto text-xs space-y-1">
                         {progress.map((p, i) => (
-                            <div key={i} className={`flex items-start gap-2 ${p.type === 'success' ? 'text-green-600' :
+                            <div key={i} className={`flex items-start gap-2 animate-fade-in ${p.type === 'success' ? 'text-green-600' :
                                 p.type === 'error' ? 'text-red-500' : 'text-text-secondary'
                                 }`}>
-                                <span className="text-text-muted shrink-0">{p.time}</span>
+                                <span className="text-text-muted/50 shrink-0 tabular-nums">{p.time}</span>
                                 <span>{p.msg}</span>
                             </div>
                         ))}
-                        <div className="flex items-center gap-2 text-brand">
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                            <span>Processing...</span>
+                        <div className="flex items-center gap-2 text-text-muted">
+                            <span className="typing-cursor text-xs" />
                         </div>
                     </div>
                 </Card>
@@ -216,12 +257,10 @@ export default function AuditPage() {
         const sub = audit.subScores || {};
 
         return (
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6 stagger">
                 {/* Header */}
                 <div className="text-center mb-4">
-                    <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle2 className="w-7 h-7 text-green-600" />
-                    </div>
+                    <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-text-primary mb-1">Audit Complete</h2>
                     <p className="text-sm text-text-secondary">
                         {crawl.pagesCrawled || 0} pages analyzed · {audit.companyName || audit.website}

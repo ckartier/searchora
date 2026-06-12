@@ -47,14 +47,14 @@ export default function CaseStudiesPage() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <Link href="/demo">
+                                <Button variant="secondary">
+                                    View Product Demo
+                                </Button>
+                            </Link>
                             <Link href="/contact">
                                 <Button icon={ArrowRight} iconPosition="right">
                                     {t('nav.requestAudit')}
-                                </Button>
-                            </Link>
-                            <Link href="/signup">
-                                <Button variant="secondary">
-                                    {t('auth.signup')}
                                 </Button>
                             </Link>
                         </div>

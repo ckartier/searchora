@@ -40,7 +40,7 @@ export default function Footer() {
                     {/* Brand column */}
                     <div className="col-span-2 md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
                         <Link href="/" className="inline-flex items-center gap-2 mb-4">
-                            <Image src="/logo.png" alt="Searchora" width={32} height={32} className="invert" />
+                            <Image src="/logo.png" alt="Searchora" width={28} height={32} className="invert" />
                             <span className="text-lg font-bold tracking-tight">Searchora</span>
                         </Link>
                         <p className="text-sm text-gray-400 leading-relaxed max-w-xs mt-3">

@@ -52,7 +52,7 @@ function HeroSection() {
                   {t('hero.cta')}
                 </Button>
               </Link>
-              <Link href="/case-studies">
+              <Link href="/demo">
                 <Button variant="secondary" size="lg" icon={Play} iconPosition="left">
                   {t('hero.ctaDemo')}
                 </Button>
@@ -501,4 +501,3 @@ export default function HomePage() {
     </>
   );
 }
-

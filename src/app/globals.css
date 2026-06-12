@@ -2,24 +2,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #f97316;
-  --color-brand-hover: #ea580c;
-  --color-brand-light: #fff7ed;
-  --color-brand-50: #fff7ed;
-  --color-brand-100: #ffedd5;
-  --color-brand-500: #f97316;
-  --color-brand-600: #ea580c;
-  --color-brand-700: #c2410c;
+  --color-brand: #e07832;
+  --color-brand-hover: #c96a2a;
+  --color-brand-light: #faf6f2;
+  --color-brand-50: #faf6f2;
+  --color-brand-100: #f2e8dd;
+  --color-brand-200: #e8d4bd;
+  --color-brand-500: #e07832;
+  --color-brand-600: #c96a2a;
+  --color-brand-700: #a85520;
   --color-dark: #111111;
   --color-dark-secondary: #333333;
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
-  --color-border: #e5e7eb;
-  --color-border-light: #f3f4f6;
+  --color-text-primary: #1c1c1e;
+  --color-text-secondary: #555e68;
+  --color-text-muted: #8e99a4;
+  --color-border: #e8eaed;
+  --color-border-light: #f2f3f5;
   --color-surface: #ffffff;
-  --color-surface-secondary: #f9fafb;
-  --color-surface-tertiary: #f3f4f6;
+  --color-surface-secondary: #f7f8f9;
+  --color-surface-tertiary: #f0f1f3;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -30,6 +31,7 @@ html {
 
 body {
   font-family: var(--font-sans);
+  font-size: 15px;
   color: var(--color-text-primary);
   background-color: var(--color-surface);
   -webkit-font-smoothing: antialiased;
@@ -60,11 +62,13 @@ body {
   background: #9ca3af;
 }
 
-/* Animations */
+/* ==================== ANIMATIONS ==================== */
+
+/* Base motions */
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
   }
 
   to {
@@ -83,15 +87,51 @@ body {
   }
 }
 
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes slide-in-right {
   from {
     opacity: 0;
-    transform: translateX(24px);
+    transform: translateX(20px);
   }
 
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -103,23 +143,211 @@ body {
   }
 
   50% {
-    opacity: 0.7;
+    opacity: 0.6;
   }
 }
 
+/* Pro loading — orbit dots */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(16px) rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg) translateX(16px) rotate(-360deg);
+  }
+}
+
+/* Shimmer skeleton effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Progress bar grow */
+@keyframes progress-indeterminate {
+  0% {
+    left: -40%;
+    width: 40%;
+  }
+
+  50% {
+    left: 20%;
+    width: 60%;
+  }
+
+  100% {
+    left: 100%;
+    width: 40%;
+  }
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Smooth counter */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger entrance for children */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== ANIMATION CLASSES ==================== */
 .animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-slide-in-right {
-  animation: slide-in-right 0.5s ease-out forwards;
+  animation: slide-in-right 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* Utility classes */
+.animate-slide-in-left {
+  animation: slide-in-left 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger delays for children */
+.stagger>*:nth-child(1) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.0s both;
+}
+
+.stagger>*:nth-child(2) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}
+
+.stagger>*:nth-child(3) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.stagger>*:nth-child(4) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+}
+
+.stagger>*:nth-child(5) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
+}
+
+.stagger>*:nth-child(6) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both;
+}
+
+.stagger>*:nth-child(7) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.36s both;
+}
+
+.stagger>*:nth-child(8) {
+  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.42s both;
+}
+
+/* Shimmer skeleton */
+.shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Orbit loader */
+.orbit-loader {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.orbit-loader .dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px;
+  border-radius: 50%;
+  background: var(--color-brand);
+  animation: orbit 1.4s linear infinite;
+}
+
+.orbit-loader .dot:nth-child(2) {
+  animation-delay: -0.47s;
+  opacity: 0.7;
+}
+
+.orbit-loader .dot:nth-child(3) {
+  animation-delay: -0.93s;
+  opacity: 0.4;
+}
+
+/* Indeterminate progress bar */
+.progress-bar-indeterminate {
+  position: relative;
+  overflow: hidden;
+  height: 3px;
+  background: #f3f4f6;
+  border-radius: 3px;
+}
+
+.progress-bar-indeterminate::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--color-brand);
+  border-radius: 3px;
+  animation: progress-indeterminate 1.8s ease-in-out infinite;
+}
+
+/* Typing cursor */
+.typing-cursor::after {
+  content: '▌';
+  animation: blink 0.8s step-end infinite;
+  color: var(--color-brand);
+  font-weight: 300;
+}
+
+/* ==================== UTILITY CLASSES ==================== */
 .text-balance {
   text-wrap: balance;
 }
@@ -136,21 +364,23 @@ body {
   @apply max-w-7xl mx-auto;
 }
 
-/* Dashboard animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Smooth transitions on all interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+/* Card hover lift */
+.card-hover {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
 /* Hide scrollbar for nav pills */

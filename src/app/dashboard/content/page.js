@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
     PenTool, Sparkles, FileText, HelpCircle, Scale, BookOpen,
     Loader2, Copy, Check, RefreshCw, Plus, Zap, Download,
@@ -110,7 +110,7 @@ export default function ContentGeneratorPage() {
     }, [user?.uid]);
 
     // Load history
-    const loadHistory = async () => {
+    const loadHistory = useCallback(async () => {
         if (!user?.uid) { setLoadingHistory(false); return; }
         try {
             const q = query(collection(db, 'generated_content'), where('userId', '==', user.uid));
@@ -128,9 +128,9 @@ export default function ContentGeneratorPage() {
             console.error('Failed to load content history:', err);
         }
         setLoadingHistory(false);
-    };
+    }, [user?.uid]);
 
-    useEffect(() => { loadHistory(); }, [user?.uid]);
+    useEffect(() => { loadHistory(); }, [loadHistory]);
 
     /* ==================== GENERATE CONTENT ==================== */
     const generateContent = async () => {
@@ -298,22 +298,23 @@ words: ${content?.split(/\s+/).length || 0}
     /* ==================== LOADING STATE ==================== */
     if (loading) {
         return (
-            <div className="max-w-2xl mx-auto space-y-6 py-10">
+            <div className="max-w-md mx-auto space-y-6 py-12 animate-fade-in">
                 <div className="text-center">
-                    <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <div className="animate-spin"><Sparkles className="w-8 h-8 text-brand" /></div>
+                    <div className="orbit-loader mx-auto mb-6">
+                        <div className="dot" />
+                        <div className="dot" />
+                        <div className="dot" />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary mb-2">Generating content...</h2>
-                    <p className="text-sm text-text-secondary">
-                        AI is creating optimized {contentTypes.find(ct => ct.id === selectedType)?.label || 'content'} about "{topic}"
+                    <h2 className="text-xl font-bold text-text-primary mb-1">Generating content</h2>
+                    <p className="text-sm text-text-muted">
+                        {contentTypes.find(ct => ct.id === selectedType)?.label} · {topic}
                     </p>
                 </div>
-                <Card hover={false} padding="p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-brand animate-pulse" />
-                        <span className="text-sm text-text-secondary">Writing structured, citation-optimized content...</span>
-                    </div>
-                </Card>
+                <div className="progress-bar-indeterminate rounded-full" />
+                <div className="flex items-center justify-center gap-2 text-text-muted">
+                    <span className="text-xs">Writing structured, citation-optimized content</span>
+                    <span className="typing-cursor text-xs" />
+                </div>
             </div>
         );
     }
@@ -463,7 +464,7 @@ words: ${content?.split(/\s+/).length || 0}
                 <div className="flex gap-3">
                     <Button variant="secondary" icon={Clock}
                         onClick={() => setView(VIEW_HISTORY)}>
-                        Voir l'historique ({history.length})
+                        Voir l&apos;historique ({history.length})
                     </Button>
                     <Button icon={Plus}
                         onClick={() => { setView(VIEW_FORM); setGeneratedContent(''); }}>
@@ -496,7 +497,7 @@ words: ${content?.split(/\s+/).length || 0}
                     <Card hover={false} padding="p-12" className="text-center">
                         <PenTool className="w-10 h-10 text-text-muted mx-auto mb-4" />
                         <h3 className="text-lg font-semibold text-text-primary mb-2">Aucun contenu</h3>
-                        <p className="text-sm text-text-secondary mb-6">Générez votre premier contenu optimisé pour l'IA.</p>
+                        <p className="text-sm text-text-secondary mb-6">Générez votre premier contenu optimisé pour l&apos;IA.</p>
                         <Button icon={Sparkles} onClick={() => setView(VIEW_FORM)}>Commencer</Button>
                     </Card>
                 ) : (
@@ -508,9 +509,7 @@ words: ${content?.split(/\s+/).length || 0}
                                 <Card key={item.id} padding="p-4" className="cursor-pointer hover:shadow-md transition-shadow"
                                     onClick={() => { setSelectedHistoryItem(item); setView(VIEW_DETAIL); }}>
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center shrink-0">
-                                            <TypeIcon className="w-5 h-5 text-brand" />
-                                        </div>
+                                        <TypeIcon className="w-4 h-4 text-brand shrink-0" />
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-sm font-semibold text-text-primary truncate">{item.topic}</h3>
                                             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -627,20 +626,18 @@ words: ${content?.split(/\s+/).length || 0}
                 <div className="lg:col-span-3 space-y-4">
                     <Card hover={false} padding="p-12" className="text-center min-h-[400px] flex items-center justify-center">
                         <div>
-                            <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                                <PenTool className="w-8 h-8 text-brand" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-text-primary mb-2">
+                            <PenTool className="w-8 h-8 text-brand mx-auto mb-5" />
+                            <h3 className="text-xl font-semibold text-text-primary mb-2">
                                 AI-Optimized Content
                             </h3>
-                            <p className="text-sm text-text-secondary max-w-sm mx-auto leading-relaxed mb-4">
+                            <p className="text-base text-text-secondary max-w-sm mx-auto leading-relaxed mb-4">
                                 Choose a content type, enter your topic, and generate content
                                 structured for maximum AI citation potential.
                             </p>
-                            <div className="flex items-center justify-center gap-3 text-[10px] text-text-muted">
-                                <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-500" /> Sauvegardé dans Firebase</span>
-                                <span className="flex items-center gap-1"><Download className="w-3 h-3 text-blue-500" /> Export .md / .html</span>
-                                <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-brand" /> Historique complet</span>
+                            <div className="flex items-center justify-center gap-4 text-xs text-text-muted">
+                                <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-600" /> Saved</span>
+                                <span className="flex items-center gap-1"><Download className="w-3 h-3 text-text-muted" /> Export</span>
+                                <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-text-muted" /> History</span>
                             </div>
                         </div>
                     </Card>

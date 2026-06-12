@@ -38,7 +38,7 @@ export default function LoginPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                        <Image src="/logo.png" alt="Searchora" width={44} height={44} />
+                        <Image src="/logo.png" alt="Searchora" width={38} height={44} />
                     </Link>
                     <h1 className="text-2xl font-bold text-text-primary mb-2">{t('auth.loginTitle')}</h1>
                     <p className="text-sm text-text-secondary">{t('auth.loginSubtitle')}</p>
