@@ -15,6 +15,7 @@ import {
     query, where, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { authFetch } from '@/lib/apiClient';
 
 /* ==================== CONTENT TYPES ==================== */
 const contentTypes = [
@@ -143,7 +144,7 @@ export default function ContentGeneratorPage() {
         const fullPrompt = contentType.prompt(topic, companyName, industry);
 
         try {
-            const resp = await fetch('/api/generate-content', {
+            const resp = await authFetch('/api/generate-content', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

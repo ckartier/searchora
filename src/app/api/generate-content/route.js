@@ -1,12 +1,15 @@
+import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { NextResponse } from 'next/server';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 /**
  * POST /api/generate-content
  * Generate AI-optimized content using Gemini
  */
 export async function POST(request) {
+    const auth = await requireAuth(request, { maxRequests: 30, windowMs: 60 * 60 * 1000 });
+    if (auth.response) return auth.response;
     try {
         const { prompt, topic, contentType, companyName, industry } = await request.json();
 

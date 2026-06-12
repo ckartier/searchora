@@ -15,6 +15,7 @@ import {
     collection, addDoc, getDocs, doc, getDoc, query, where, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { authFetch } from '@/lib/apiClient';
 
 /* ==================== PAGE TYPE ICONS ==================== */
 const pageTypeConfig = {
@@ -245,7 +246,7 @@ export default function ClustersPage() {
         setResult(null);
 
         try {
-            const resp = await fetch('/api/generate-clusters', {
+            const resp = await authFetch('/api/generate-clusters', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

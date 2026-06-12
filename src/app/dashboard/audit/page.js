@@ -33,6 +33,7 @@ import Input from '@/components/ui/Input';
 import Card from '@/components/ui/Card';
 import { useAuth } from '@/lib/auth';
 import { saveFullAudit } from '@/lib/firestoreAudit';
+import { authFetch } from '@/lib/apiClient';
 
 const industries = [
     'SaaS / Software', 'E-commerce', 'Financial Services', 'Healthcare',
@@ -118,7 +119,7 @@ export default function AuditPage() {
             if (form.industry) log(`Industry: ${form.industry}`);
             log('Phase 1: Crawling website pages...');
 
-            const resp = await fetch('/api/audit', {
+            const resp = await authFetch('/api/audit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

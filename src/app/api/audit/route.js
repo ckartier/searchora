@@ -1,3 +1,4 @@
+import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { NextResponse } from 'next/server';
 import { runFullAudit, buildFirestoreAudit, buildFirestoreSubDocs } from '@/lib/audit/index.js';
 import { assertSafePublicUrl } from '@/lib/security/urlSafety.js';
@@ -15,6 +16,8 @@ import { assertSafePublicUrl } from '@/lib/security/urlSafety.js';
  * Supports real crawling + AI (OpenAI), with demo fallback.
  */
 export async function POST(request) {
+    const auth = await requireAuth(request, { maxRequests: 10, windowMs: 60 * 60 * 1000 });
+    if (auth.response) return auth.response;
     try {
         const body = await request.json();
         const {
@@ -26,7 +29,6 @@ export async function POST(request) {
             keywords = [],
             maxPages = 30,
             maxDepth = 2,
-            userId = null,
             projectId = null,
         } = body;
 
@@ -61,7 +63,7 @@ export async function POST(request) {
             keywords,
             maxPages: Math.min(maxPages, 50),
             maxDepth: Math.min(maxDepth, 3),
-            userId,
+            userId: auth.user.uid,
             projectId,
         });
 

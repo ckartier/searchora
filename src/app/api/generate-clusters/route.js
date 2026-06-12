@@ -1,3 +1,4 @@
+import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { NextResponse } from 'next/server';
 import { generateClusters } from '@/lib/clusterGenerator/index.js';
 
@@ -6,6 +7,8 @@ import { generateClusters } from '@/lib/clusterGenerator/index.js';
  * Generate strategic content clusters for AI visibility
  */
 export async function POST(request) {
+    const auth = await requireAuth(request, { maxRequests: 30, windowMs: 60 * 60 * 1000 });
+    if (auth.response) return auth.response;
     try {
         const body = await request.json();
         const {

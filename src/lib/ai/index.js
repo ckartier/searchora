@@ -24,7 +24,7 @@ import {
 } from './responseParser.js';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const LLM_PROVIDER = process.env.LLM_PROVIDER || (GEMINI_API_KEY ? 'gemini' : 'demo');
 
 /* ==================== LLM CLIENT ==================== */

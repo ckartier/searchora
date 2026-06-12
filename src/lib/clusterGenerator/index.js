@@ -6,7 +6,7 @@
  * publishing order, and AI answer value assessment.
  */
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 /* ==================== MAIN GENERATOR ==================== */
 

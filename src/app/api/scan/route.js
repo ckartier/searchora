@@ -1,9 +1,12 @@
+import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { runSecurityScan } from '@/lib/scanner';
 import { assertSafePublicUrl } from '@/lib/security/urlSafety';
 
-export async function POST(req) {
+export async function POST(request) {
+    const auth = await requireAuth(request, { maxRequests: 10, windowMs: 60 * 60 * 1000 });
+    if (auth.response) return auth.response;
     try {
-        const { url } = await req.json();
+        const { url } = await request.json();
 
         if (!url) {
             return Response.json({ error: 'URL is required' }, { status: 400 });

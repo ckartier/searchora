@@ -1,3 +1,4 @@
+import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { NextResponse } from 'next/server';
 import { startCrawl, buildAuditInput } from '@/lib/crawler/index.js';
 import { assertSafePublicUrl } from '@/lib/security/urlSafety.js';
@@ -9,6 +10,8 @@ import { assertSafePublicUrl } from '@/lib/security/urlSafety.js';
  * This is the entry point for the crawler engine.
  */
 export async function POST(request) {
+    const auth = await requireAuth(request, { maxRequests: 10, windowMs: 60 * 60 * 1000 });
+    if (auth.response) return auth.response;
     try {
         const body = await request.json();
         const {

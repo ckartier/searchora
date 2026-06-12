@@ -1,3 +1,4 @@
+import { requireAuth } from '@/lib/server/verifyAuth.js';
 import { NextResponse } from 'next/server';
 
 /**
@@ -118,6 +119,8 @@ const handlers = {
 };
 
 export async function POST(request) {
+    const auth = await requireAuth(request, { maxRequests: 60, windowMs: 60 * 60 * 1000 });
+    if (auth.response) return auth.response;
     try {
         const { action, data } = await request.json();
 

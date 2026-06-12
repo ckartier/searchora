@@ -16,6 +16,7 @@ import {
     collection, addDoc, getDocs, query, where, orderBy, limit, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { authFetch } from '@/lib/apiClient';
 
 /* ==================== PRESENCE RESULT BAR ==================== */
 function PresenceBar({ value, label }) {
@@ -102,7 +103,7 @@ export default function PresencePage() {
         setProgress({ message: 'Initializing presence test...', current: 0, total: 0 });
 
         try {
-            const resp = await fetch('/api/presence-test', {
+            const resp = await authFetch('/api/presence-test', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
