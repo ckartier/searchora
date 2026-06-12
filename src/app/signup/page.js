@@ -23,14 +23,14 @@ export default function SignupPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        if (form.password.length < 8) { setError('Password must be at least 8 characters.'); return; }
-        if (form.password !== form.confirmPassword) { setError('Passwords do not match.'); return; }
+        if (form.password.length < 8) { setError(t('auth.errorPasswordLength')); return; }
+        if (form.password !== form.confirmPassword) { setError(t('auth.errorPasswordMatch')); return; }
         setLoading(true);
         try {
             await signUp(form.email, form.password, form.name, form.company);
-            router.push('/dashboard');
+            router.replace('/dashboard');
         } catch (err) {
-            setError(err.code === 'auth/email-already-in-use' ? 'An account with this email already exists.' : 'Something went wrong.');
+            setError(err.code === 'auth/email-already-in-use' ? t('auth.errorEmailInUse') : t('auth.errorGeneric'));
         } finally { setLoading(false); }
     };
 
@@ -49,10 +49,10 @@ export default function SignupPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {error && <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>}
 
-                        <Input label={t('auth.fullName')} name="name" placeholder="John Doe" icon={User} value={form.name} onChange={handleChange} required />
-                        <Input label={t('auth.email')} name="email" type="email" placeholder="you@company.com" icon={Mail} value={form.email} onChange={handleChange} required />
-                        <Input label={t('auth.company')} name="company" placeholder="Acme Inc." icon={Building2} value={form.company} onChange={handleChange} />
-                        <Input label={t('auth.password')} name="password" type="password" placeholder="Min. 8 characters" icon={Lock} value={form.password} onChange={handleChange} required />
+                        <Input label={t('auth.fullName')} name="name" placeholder={t('auth.namePlaceholder')} icon={User} value={form.name} onChange={handleChange} required />
+                        <Input label={t('auth.email')} name="email" type="email" placeholder={t('auth.emailPlaceholder')} icon={Mail} value={form.email} onChange={handleChange} required />
+                        <Input label={t('auth.company')} name="company" placeholder={t('auth.companyPlaceholder')} icon={Building2} value={form.company} onChange={handleChange} />
+                        <Input label={t('auth.password')} name="password" type="password" placeholder={t('auth.passwordPlaceholder')} icon={Lock} value={form.password} onChange={handleChange} required />
                         <Input label={t('auth.confirmPassword')} name="confirmPassword" type="password" placeholder="••••••••" icon={Lock} value={form.confirmPassword} onChange={handleChange} required />
 
                         <Button type="submit" size="lg" className="w-full" loading={loading} icon={ArrowRight} iconPosition="right">

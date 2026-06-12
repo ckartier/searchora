@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import { useI18n } from '@/lib/i18n';
 
 const views = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -28,6 +29,7 @@ const prompts = [
 ];
 
 function LiveTest() {
+    const { t } = useI18n();
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -78,15 +80,15 @@ function LiveTest() {
                 <div>
                     <div className="inline-flex items-center gap-2 text-xs font-semibold text-brand bg-white/10 rounded-full px-3 py-1.5 mb-5">
                         <Zap className="w-3.5 h-3.5" />
-                        One free live test
+                        {t('demo.liveBadge')}
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-bold">Test your website live</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold">{t('demo.liveTitle')}</h2>
                     <p className="text-sm text-gray-300 leading-relaxed mt-3">
-                        Searchora will securely scan up to 3 public pages and show an instant AI-readiness snapshot.
+                        {t('demo.liveSubtitle')}
                     </p>
                     <div className="flex items-start gap-2 mt-5 text-xs text-gray-400">
                         <Lock className="w-4 h-4 text-brand shrink-0" />
-                        <span>One successful test per browser. No account required.</span>
+                        <span>{t('demo.liveLimit')}</span>
                     </div>
                 </div>
 
@@ -94,7 +96,7 @@ function LiveTest() {
                     {!result ? (
                         <form onSubmit={runTest} className="bg-white/10 border border-white/10 rounded-2xl p-4 sm:p-5">
                             <label htmlFor="demo-website" className="block text-xs font-medium text-gray-300 mb-2">
-                                Public website URL
+                                {t('demo.websiteUrl')}
                             </label>
                             <div className="flex flex-col sm:flex-row gap-3">
                                 <input
@@ -103,7 +105,7 @@ function LiveTest() {
                                     inputMode="url"
                                     value={websiteUrl}
                                     onChange={(event) => setWebsiteUrl(event.target.value)}
-                                    placeholder="yourwebsite.com"
+                                    placeholder={t('demo.websitePlaceholder')}
                                     disabled={loading || used}
                                     className="flex-1 min-w-0 rounded-xl border border-white/20 bg-white text-text-primary px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand/40 disabled:opacity-60"
                                 />
@@ -113,7 +115,7 @@ function LiveTest() {
                                     icon={loading ? Loader2 : Search}
                                     className={loading ? '[&_svg]:animate-spin' : ''}
                                 >
-                                    {loading ? 'Testing...' : used ? 'Test used' : 'Test my site'}
+                                    {loading ? t('demo.testing') : used ? t('demo.testUsed') : t('demo.testSite')}
                                 </Button>
                             </div>
                             {error && (
@@ -124,7 +126,7 @@ function LiveTest() {
                             )}
                             {used && !error && (
                                 <p className="text-xs text-gray-400 mt-4">
-                                    This browser has already used its free live test.
+                                    {t('demo.alreadyUsed')}
                                 </p>
                             )}
                         </form>
@@ -132,7 +134,7 @@ function LiveTest() {
                         <div className="bg-white text-text-primary rounded-2xl p-5 sm:p-6">
                             <div className="flex items-center justify-between gap-4 mb-5">
                                 <div className="min-w-0">
-                                    <p className="text-xs text-text-muted">Live result</p>
+                                    <p className="text-xs text-text-muted">{t('demo.liveResult')}</p>
                                     <p className="text-sm font-semibold truncate">{result.website}</p>
                                 </div>
                                 <div className="w-14 h-14 rounded-full bg-brand-50 grid place-items-center shrink-0">
@@ -141,9 +143,9 @@ function LiveTest() {
                             </div>
                             <div className="grid grid-cols-3 gap-2 mb-5 text-center">
                                 {[
-                                    ['Pages', result.pagesCrawled],
-                                    ['Avg words', result.signals.avgWordCount],
-                                    ['Schema', `${result.signals.schemaAdoption}%`],
+                                    [t('demo.pages'), result.pagesCrawled],
+                                    [t('demo.averageWords'), result.signals.avgWordCount],
+                                    [t('demo.schema'), `${result.signals.schemaAdoption}%`],
                                 ].map(([label, value]) => (
                                     <div key={label} className="bg-surface-secondary rounded-xl p-3">
                                         <div className="text-sm font-bold">{value}</div>
@@ -160,7 +162,7 @@ function LiveTest() {
                                 ))}
                             </div>
                             <Link href="/signup" className="inline-flex items-center gap-1.5 text-sm font-medium text-brand mt-5">
-                                Unlock the full audit <ArrowRight className="w-4 h-4" />
+                                {t('demo.unlock')} <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     )}
@@ -359,6 +361,7 @@ function ContentPlan() {
 
 export default function DemoPage() {
     const [activeView, setActiveView] = useState('overview');
+    const { t } = useI18n();
 
     return (
         <div className="bg-surface-secondary min-h-screen">
@@ -367,13 +370,13 @@ export default function DemoPage() {
                     <div className="max-w-3xl mb-8">
                         <div className="inline-flex items-center gap-2 text-xs font-semibold text-brand bg-brand-50 rounded-full px-3 py-1.5 mb-4">
                             <Zap className="w-3.5 h-3.5" />
-                            Interactive product demo
+                            {t('demo.badge')}
                         </div>
                         <h1 className="text-3xl sm:text-5xl font-bold text-text-primary tracking-tight">
-                            See how Searchora turns AI visibility into action
+                            {t('demo.title')}
                         </h1>
                         <p className="text-base sm:text-lg text-text-secondary mt-4 max-w-2xl">
-                            Explore a sample workspace with real product views. No account, setup, or credit card required.
+                            {t('demo.subtitle')}
                         </p>
                     </div>
 

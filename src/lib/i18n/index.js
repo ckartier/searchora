@@ -20,12 +20,14 @@ export function I18nProvider({ children }) {
         if (saved && translations[saved]) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setLang(saved);
+            document.documentElement.lang = saved;
         }
     }, []);
 
     const switchLanguage = useCallback((newLang) => {
         if (translations[newLang]) {
             setLang(newLang);
+            document.documentElement.lang = newLang;
             if (typeof window !== 'undefined') {
                 localStorage.setItem('searchora-lang', newLang);
             }

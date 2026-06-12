@@ -19,15 +19,26 @@ export default function LoginPage() {
     const router = useRouter();
     const { t } = useI18n();
 
+    const getAuthError = (code) => {
+        const errorKeys = {
+            'auth/invalid-credential': 'auth.errorInvalidCredentials',
+            'auth/invalid-email': 'auth.errorInvalidEmail',
+            'auth/too-many-requests': 'auth.errorTooManyRequests',
+            'auth/network-request-failed': 'auth.errorNetwork',
+            'auth/configuration-not-found': 'auth.errorConfiguration',
+        };
+        return t(errorKeys[code] || 'auth.errorGeneric');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
         try {
             await signIn(email, password);
-            router.push('/dashboard');
+            router.replace('/dashboard');
         } catch (err) {
-            setError('Invalid email or password. Please try again.');
+            setError(getAuthError(err.code));
         } finally {
             setLoading(false);
         }
@@ -55,7 +66,7 @@ export default function LoginPage() {
                         <Input
                             label={t('auth.email')}
                             type="email"
-                            placeholder="you@company.com"
+                            placeholder={t('auth.emailPlaceholder')}
                             icon={Mail}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}

@@ -137,21 +137,22 @@ function HeroSection() {
 
 /* ================================ PROBLEM ================================ */
 function ProblemSection() {
+  const { t } = useI18n();
   const problems = [
     {
       icon: Search,
-      title: 'Users ask AI directly',
-      description: 'Millions of people now use ChatGPT, Gemini, and Copilot instead of traditional search engines for answers.',
+      title: t('problem.stat1Title'),
+      description: t('problem.stat1Desc'),
     },
     {
       icon: Eye,
-      title: 'Brands are invisible',
-      description: 'Most companies do not appear in AI-generated answers. Their content is not structured for AI retrieval.',
+      title: t('problem.stat2Title'),
+      description: t('problem.stat2Desc'),
     },
     {
       icon: TrendingUp,
-      title: 'Lost leads & authority',
-      description: 'If your brand is not cited in AI answers, you lose visibility, credibility, and qualified traffic to competitors.',
+      title: t('problem.stat3Title'),
+      description: t('problem.stat3Desc'),
     },
   ];
 
@@ -159,11 +160,10 @@ function ProblemSection() {
     <Section background="gray">
       <AnimatedSection>
         <div className="text-center mb-16">
-          <SectionLabel className="mb-4">The Problem</SectionLabel>
-          <SectionTitle className="mb-4">Search behavior is changing</SectionTitle>
+          <SectionLabel className="mb-4">{t('problem.label')}</SectionLabel>
+          <SectionTitle className="mb-4">{t('problem.title')}</SectionTitle>
           <SectionDescription className="mx-auto">
-            The way people find information is fundamentally shifting. AI tools are
-            becoming the primary interface for answers — and most brands are not visible.
+            {t('problem.subtitle')}
           </SectionDescription>
         </div>
       </AnimatedSection>
@@ -191,26 +191,27 @@ function ProblemSection() {
 
 /* ================================ SOLUTION ================================ */
 function SolutionSection() {
+  const { t } = useI18n();
   const solutions = [
     {
       icon: BarChart3,
-      title: 'Audit Visibility',
-      description: 'Discover where and how your brand appears — or doesn\'t — in AI-generated answers across major platforms.',
+      title: t('solution.feature1Title'),
+      description: t('solution.feature1Desc'),
     },
     {
       icon: FileText,
-      title: 'Optimize Content',
-      description: 'Structure your content to be retrievable and citable by large language models and AI assistants.',
+      title: t('solution.feature2Title'),
+      description: t('solution.feature2Desc'),
     },
     {
       icon: Target,
-      title: 'Structure for AI',
-      description: 'Implement technical optimizations that make your pages the preferred source for AI-generated responses.',
+      title: t('solution.feature3Title'),
+      description: t('solution.feature3Desc'),
     },
     {
       icon: Shield,
-      title: 'Monitor Presence',
-      description: 'Track your brand\'s appearance in AI answers over time and stay ahead of competitors in AI visibility.',
+      title: t('services.s5Title'),
+      description: t('services.s5Desc'),
     },
   ];
 
@@ -219,13 +220,12 @@ function SolutionSection() {
       <div className="grid lg:grid-cols-2 gap-16 items-center">
         <div>
           <AnimatedSection>
-            <SectionLabel className="mb-4">The Solution</SectionLabel>
+            <SectionLabel className="mb-4">{t('solution.label')}</SectionLabel>
             <SectionTitle className="mb-4">
-              Your brand, cited by AI
+              {t('solution.title')}
             </SectionTitle>
             <SectionDescription>
-              Searchora provides everything you need to become the trusted source
-              that AI tools reference when answering questions in your industry.
+              {t('solution.subtitle')}
             </SectionDescription>
           </AnimatedSection>
         </div>
@@ -256,18 +256,18 @@ function HowItWorksSection() {
   const steps = [
     {
       step: '01',
-      title: 'Audit',
-      description: 'We analyze how your brand currently appears across AI tools like ChatGPT, Gemini, and Copilot. You get a full visibility report.',
+      title: t('howItWorks.step1Title'),
+      description: t('howItWorks.step1Desc'),
     },
     {
       step: '02',
-      title: 'Optimize',
-      description: 'We restructure your content, technical setup, and entity signals to make your brand the preferred AI source.',
+      title: t('howItWorks.step2Title'),
+      description: t('howItWorks.step2Desc'),
     },
     {
       step: '03',
-      title: 'Position',
-      description: 'Ongoing monitoring and optimization ensure your brand maintains and improves its position in AI-generated answers.',
+      title: t('howItWorks.step3Title'),
+      description: t('howItWorks.step3Desc'),
     },
   ];
 
@@ -275,10 +275,10 @@ function HowItWorksSection() {
     <Section background="gray">
       <AnimatedSection>
         <div className="text-center mb-16">
-          <SectionLabel className="mb-4">How It Works</SectionLabel>
-          <SectionTitle className="mb-4">Three steps to AI visibility</SectionTitle>
+          <SectionLabel className="mb-4">{t('howItWorks.label')}</SectionLabel>
+          <SectionTitle className="mb-4">{t('howItWorks.title')}</SectionTitle>
           <SectionDescription className="mx-auto">
-            A clear, proven process to make your brand the answer AI tools reference.
+            {t('howItWorks.subtitle')}
           </SectionDescription>
         </div>
       </AnimatedSection>
@@ -395,23 +395,23 @@ function ServicesSection() {
   const services = [
     {
       icon: BarChart3,
-      title: 'AI Visibility Audit',
-      description: 'Comprehensive analysis of how your brand appears across all major AI platforms and language models.',
+      title: t('services.s1Title'),
+      description: t('services.s1Desc'),
     },
     {
       icon: FileText,
-      title: 'GEO Content Strategy',
-      description: 'Content engineering optimized for Generative Engine Optimization — structured to be cited by AI.',
+      title: t('services.s2Title'),
+      description: t('services.s2Desc'),
     },
     {
       icon: Zap,
-      title: 'Technical Optimization',
-      description: 'Schema markup, entity signals, and technical architecture that makes your content AI-retrievable.',
+      title: t('services.s4Title'),
+      description: t('services.s4Desc'),
     },
     {
       icon: Eye,
-      title: 'Answer Monitoring',
-      description: 'Continuous tracking of your brand presence in AI answers with real-time alerts and reports.',
+      title: t('services.s5Title'),
+      description: t('services.s5Desc'),
     },
   ];
 
@@ -419,11 +419,10 @@ function ServicesSection() {
     <Section background="gray">
       <AnimatedSection>
         <div className="text-center mb-16">
-          <SectionLabel className="mb-4">Services</SectionLabel>
-          <SectionTitle className="mb-4">Everything you need for AI visibility</SectionTitle>
+          <SectionLabel className="mb-4">{t('services.label')}</SectionLabel>
+          <SectionTitle className="mb-4">{t('services.title')}</SectionTitle>
           <SectionDescription className="mx-auto">
-            From initial audit to ongoing monitoring, we cover every aspect of
-            making your brand discoverable by AI systems.
+            {t('services.subtitle')}
           </SectionDescription>
         </div>
       </AnimatedSection>

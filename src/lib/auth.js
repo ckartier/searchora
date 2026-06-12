@@ -43,6 +43,7 @@ export function AuthProvider({ children }) {
 
     const signUp = async (email, password, displayName, companyName) => {
         const result = await createUserWithEmailAndPassword(auth, email, password);
+        setUser(result.user);
         await updateProfile(result.user, { displayName });
         await setDoc(doc(db, 'users', result.user.uid), {
             email,
@@ -56,7 +57,9 @@ export function AuthProvider({ children }) {
     };
 
     const signIn = async (email, password) => {
-        return signInWithEmailAndPassword(auth, email, password);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        setUser(result.user);
+        return result;
     };
 
     const signOut = async () => {
