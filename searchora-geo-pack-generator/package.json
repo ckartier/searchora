@@ -1,0 +1,14 @@
+{
+  "name": "searchora-geo-pack-generator",
+  "version": "1.0.0",
+  "description": "Generates a universal, installable GEO pack (llms.txt, JSON-LD, FAQ) from a Searchora audit file.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node src/index.js"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
