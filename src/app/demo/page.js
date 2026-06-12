@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-    ArrowRight, BarChart3, CheckCircle2, Eye, FileText, Globe,
-    MessageSquare, Search, Sparkles, Target, TrendingUp, Zap,
+    AlertTriangle, ArrowRight, BarChart3, CheckCircle2, Eye, FileText, Globe,
+    Loader2, Lock, MessageSquare, Search, Sparkles, Target, TrendingUp, Zap,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
@@ -26,6 +26,149 @@ const prompts = [
     { prompt: 'How do I improve product analytics adoption?', mentioned: true, source: 'gemini.google.com' },
     { prompt: 'Top alternatives to legacy analytics suites', mentioned: false, source: 'perplexity.ai' },
 ];
+
+function LiveTest() {
+    const [websiteUrl, setWebsiteUrl] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [result, setResult] = useState(null);
+    const [used, setUsed] = useState(false);
+
+    useEffect(() => {
+        setUsed(localStorage.getItem('searchora-demo-test-used') === '1');
+    }, []);
+
+    const runTest = async (event) => {
+        event.preventDefault();
+        if (!websiteUrl.trim() || loading || used) return;
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('/api/demo-test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ websiteUrl: websiteUrl.trim() }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 429) {
+                    localStorage.setItem('searchora-demo-test-used', '1');
+                    setUsed(true);
+                }
+                throw new Error(data.error || 'Live test failed.');
+            }
+
+            localStorage.setItem('searchora-demo-test-used', '1');
+            setUsed(true);
+            setResult(data.result);
+        } catch (testError) {
+            setError(testError.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="mb-10 bg-dark text-white rounded-3xl p-6 sm:p-8 lg:p-10 overflow-hidden relative">
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative grid lg:grid-cols-[0.85fr_1.15fr] gap-8 lg:gap-12 items-start">
+                <div>
+                    <div className="inline-flex items-center gap-2 text-xs font-semibold text-brand bg-white/10 rounded-full px-3 py-1.5 mb-5">
+                        <Zap className="w-3.5 h-3.5" />
+                        One free live test
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-bold">Test your website live</h2>
+                    <p className="text-sm text-gray-300 leading-relaxed mt-3">
+                        Searchora will securely scan up to 3 public pages and show an instant AI-readiness snapshot.
+                    </p>
+                    <div className="flex items-start gap-2 mt-5 text-xs text-gray-400">
+                        <Lock className="w-4 h-4 text-brand shrink-0" />
+                        <span>One successful test per browser. No account required.</span>
+                    </div>
+                </div>
+
+                <div>
+                    {!result ? (
+                        <form onSubmit={runTest} className="bg-white/10 border border-white/10 rounded-2xl p-4 sm:p-5">
+                            <label htmlFor="demo-website" className="block text-xs font-medium text-gray-300 mb-2">
+                                Public website URL
+                            </label>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <input
+                                    id="demo-website"
+                                    type="text"
+                                    inputMode="url"
+                                    value={websiteUrl}
+                                    onChange={(event) => setWebsiteUrl(event.target.value)}
+                                    placeholder="yourwebsite.com"
+                                    disabled={loading || used}
+                                    className="flex-1 min-w-0 rounded-xl border border-white/20 bg-white text-text-primary px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand/40 disabled:opacity-60"
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={!websiteUrl.trim() || loading || used}
+                                    icon={loading ? Loader2 : Search}
+                                    className={loading ? '[&_svg]:animate-spin' : ''}
+                                >
+                                    {loading ? 'Testing...' : used ? 'Test used' : 'Test my site'}
+                                </Button>
+                            </div>
+                            {error && (
+                                <div className="flex items-start gap-2 text-xs text-red-200 mt-4">
+                                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                                    <span>{error}</span>
+                                </div>
+                            )}
+                            {used && !error && (
+                                <p className="text-xs text-gray-400 mt-4">
+                                    This browser has already used its free live test.
+                                </p>
+                            )}
+                        </form>
+                    ) : (
+                        <div className="bg-white text-text-primary rounded-2xl p-5 sm:p-6">
+                            <div className="flex items-center justify-between gap-4 mb-5">
+                                <div className="min-w-0">
+                                    <p className="text-xs text-text-muted">Live result</p>
+                                    <p className="text-sm font-semibold truncate">{result.website}</p>
+                                </div>
+                                <div className="w-14 h-14 rounded-full bg-brand-50 grid place-items-center shrink-0">
+                                    <span className="text-xl font-bold text-brand">{result.score}</span>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 mb-5 text-center">
+                                {[
+                                    ['Pages', result.pagesCrawled],
+                                    ['Avg words', result.signals.avgWordCount],
+                                    ['Schema', `${result.signals.schemaAdoption}%`],
+                                ].map(([label, value]) => (
+                                    <div key={label} className="bg-surface-secondary rounded-xl p-3">
+                                        <div className="text-sm font-bold">{value}</div>
+                                        <div className="text-[10px] text-text-muted">{label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="space-y-2">
+                                {result.gaps.map((gap) => (
+                                    <div key={gap.type} className="flex items-start gap-2 text-xs">
+                                        <AlertTriangle className="w-3.5 h-3.5 text-brand shrink-0 mt-0.5" />
+                                        <span className="text-text-secondary">{gap.title}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <Link href="/signup" className="inline-flex items-center gap-1.5 text-sm font-medium text-brand mt-5">
+                                Unlock the full audit <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function ScoreRing({ score }) {
     return (
@@ -233,6 +376,8 @@ export default function DemoPage() {
                             Explore a sample workspace with real product views. No account, setup, or credit card required.
                         </p>
                     </div>
+
+                    <LiveTest />
 
                     <div className="bg-white rounded-3xl border border-border shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
                         <div className="border-b border-border px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
