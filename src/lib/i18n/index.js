@@ -14,13 +14,18 @@ const SUPPORTED_LANGUAGES = [
 export function I18nProvider({ children }) {
     const [lang, setLang] = useState('en');
 
-    // Persist language choice
+    // Persist language choice, falling back to the browser language on first visit
     useEffect(() => {
-        const saved = typeof window !== 'undefined' ? localStorage.getItem('searchora-lang') : null;
-        if (saved && translations[saved]) {
+        if (typeof window === 'undefined') return;
+        const saved = localStorage.getItem('searchora-lang');
+        const detected = (navigator.language || '').slice(0, 2).toLowerCase();
+        const initial = (saved && translations[saved] && saved)
+            || (translations[detected] && detected)
+            || null;
+        if (initial) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setLang(saved);
-            document.documentElement.lang = saved;
+            setLang(initial);
+            document.documentElement.lang = initial;
         }
     }, []);
 

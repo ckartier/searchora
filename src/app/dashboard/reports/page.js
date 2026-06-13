@@ -10,9 +10,12 @@ import { useI18n } from '@/lib/i18n';
 import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
+const dateLocales = { en: 'en-US', fr: 'fr-FR', es: 'es-ES' };
+
 export default function ReportsPage() {
     const { user } = useAuth();
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
+    const dateLocale = dateLocales[lang] || 'en-US';
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedReport, setSelectedReport] = useState(null);
@@ -34,9 +37,9 @@ export default function ReportsPage() {
                         : new Date(data.createdAt || Date.now());
                     return {
                         id: d.id,
-                        title: `Audit Report — ${data.companyName || data.website || 'Website'}`,
+                        title: `${t('reports.auditReport')} — ${data.companyName || data.website || 'Website'}`,
                         type: 'Audit',
-                        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        date: date.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' }),
                         dateRaw: date,
                         website: data.website || '',
                         score: data.visibilityScore || 0,
@@ -64,9 +67,9 @@ export default function ReportsPage() {
                         : new Date(data.createdAt || Date.now());
                     return {
                         id: d.id,
-                        title: `Presence Test — ${data.domain || 'Domain'}`,
+                        title: `${t('reports.presenceTest')} — ${data.domain || 'Domain'}`,
                         type: 'Presence',
-                        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        date: date.toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', year: 'numeric' }),
                         dateRaw: date,
                         domain: data.domain || '',
                         presenceRate: data.presenceRate || 0,
@@ -86,7 +89,8 @@ export default function ReportsPage() {
             setLoading(false);
         }
         loadReports();
-    }, [user?.uid]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.uid, lang]);
 
     if (loading) {
         return (
@@ -106,7 +110,7 @@ export default function ReportsPage() {
                         <p className="text-sm text-text-secondary mt-0.5">{selectedReport.date}</p>
                     </div>
                     <Button variant="secondary" size="sm" onClick={() => setSelectedReport(null)}>
-                        ← Back to reports
+                        {t('reports.back')}
                     </Button>
                 </div>
 
@@ -118,7 +122,7 @@ export default function ReportsPage() {
                                 <span className="text-3xl font-bold text-brand">{selectedReport.score}%</span>
                                 <div>
                                     <h3 className="font-semibold text-text-primary">{selectedReport.website}</h3>
-                                    <p className="text-sm text-text-muted">{selectedReport.pagesCrawled} pages crawled</p>
+                                    <p className="text-sm text-text-muted">{selectedReport.pagesCrawled} {t('reports.pagesCrawled')}</p>
                                 </div>
                             </div>
                         </Card>
@@ -126,7 +130,7 @@ export default function ReportsPage() {
                         {/* Executive summary */}
                         {selectedReport.executiveReport && (
                             <Card hover={false} padding="p-6">
-                                <h3 className="text-sm font-semibold text-text-primary mb-3">Executive Summary</h3>
+                                <h3 className="text-sm font-semibold text-text-primary mb-3">{t('reports.executiveSummary')}</h3>
                                 <p className="text-sm text-text-secondary leading-relaxed">{selectedReport.executiveReport}</p>
                             </Card>
                         )}
@@ -135,7 +139,7 @@ export default function ReportsPage() {
                         <div className="grid lg:grid-cols-2 gap-4">
                             {selectedReport.strengths.length > 0 && (
                                 <Card hover={false} padding="p-6">
-                                    <h3 className="text-sm font-semibold text-green-600 mb-3">Strengths</h3>
+                                    <h3 className="text-sm font-semibold text-green-600 mb-3">{t('reports.strengths')}</h3>
                                     <ul className="space-y-2">
                                         {selectedReport.strengths.map((s, i) => (
                                             <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
@@ -147,7 +151,7 @@ export default function ReportsPage() {
                             )}
                             {selectedReport.weaknesses.length > 0 && (
                                 <Card hover={false} padding="p-6">
-                                    <h3 className="text-sm font-semibold text-red-500 mb-3">Weaknesses</h3>
+                                    <h3 className="text-sm font-semibold text-red-500 mb-3">{t('reports.weaknesses')}</h3>
                                     <ul className="space-y-2">
                                         {selectedReport.weaknesses.map((w, i) => (
                                             <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
@@ -162,7 +166,7 @@ export default function ReportsPage() {
                         {/* Recommendations */}
                         {selectedReport.recommendations.length > 0 && (
                             <Card hover={false} padding="p-6">
-                                <h3 className="text-sm font-semibold text-text-primary mb-3">Recommendations</h3>
+                                <h3 className="text-sm font-semibold text-text-primary mb-3">{t('reports.recommendations')}</h3>
                                 <div className="space-y-2">
                                     {selectedReport.recommendations.map((rec, i) => (
                                         <div key={i} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-xl">
@@ -194,13 +198,13 @@ export default function ReportsPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-text-primary">{selectedReport.domain}</h3>
-                                    <p className="text-sm text-text-muted">{selectedReport.promptCount} prompts · {selectedReport.totalMentions} mentions</p>
+                                    <p className="text-sm text-text-muted">{selectedReport.promptCount} {t('reports.prompts')} · {selectedReport.totalMentions} {t('reports.mentions')}</p>
                                 </div>
                             </div>
                         </Card>
                         {selectedReport.competitorLeaderboard?.length > 0 && (
                             <Card hover={false} padding="p-6">
-                                <h3 className="text-sm font-semibold text-text-primary mb-3">Competitor Presence</h3>
+                                <h3 className="text-sm font-semibold text-text-primary mb-3">{t('reports.competitorPresence')}</h3>
                                 {selectedReport.competitorLeaderboard.map((c) => (
                                     <div key={c.domain} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl mb-2">
                                         <span className="text-sm text-text-primary">{c.domain}</span>
@@ -218,21 +222,21 @@ export default function ReportsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-text-primary">Reports</h1>
+                <h1 className="text-2xl font-bold text-text-primary">{t('reports.title')}</h1>
                 <p className="text-sm text-text-secondary mt-0.5">
-                    {reports.length > 0 ? `${reports.length} report${reports.length > 1 ? 's' : ''}` : 'No reports yet'}
+                    {reports.length > 0 ? `${reports.length} ${t('reports.countSuffix')}` : t('reports.noReports')}
                 </p>
             </div>
 
             {reports.length === 0 ? (
                 <Card hover={false} padding="p-12" className="text-center">
                     <FileText className="w-7 h-7 text-brand mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-text-primary mb-2">No reports yet</h3>
+                    <h3 className="text-xl font-semibold text-text-primary mb-2">{t('reports.noReports')}</h3>
                     <p className="text-base text-text-secondary max-w-md mx-auto mb-6">
-                        Run an audit or a presence test to generate your first report.
+                        {t('reports.noReportsDesc')}
                     </p>
                     <Link href="/dashboard/audit">
-                        <Button icon={Zap}>Run an audit</Button>
+                        <Button icon={Zap}>{t('reports.runAudit')}</Button>
                     </Link>
                 </Card>
             ) : (
@@ -264,7 +268,7 @@ export default function ReportsPage() {
                                         ? 'text-brand bg-brand-50'
                                         : 'text-blue-600 bg-blue-50'
                                         }`}>
-                                        {report.type}
+                                        {report.type === 'Audit' ? t('reports.typeAudit') : t('reports.typePresence')}
                                     </span>
                                     {report.type === 'Audit' && (
                                         <span className="text-sm font-bold text-brand">{report.score}%</span>
@@ -274,7 +278,7 @@ export default function ReportsPage() {
                                             {report.presenceRate}%
                                         </span>
                                     )}
-                                    <Button variant="ghost" size="sm" icon={Eye}>View</Button>
+                                    <Button variant="ghost" size="sm" icon={Eye}>{t('reports.view')}</Button>
                                 </div>
                             </div>
                         </Card>

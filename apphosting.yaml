@@ -1,0 +1,41 @@
+# Firebase App Hosting configuration — backend "searchora" (europe-west4)
+# Public Firebase web config is safe to commit; LLM keys live in Cloud Secret Manager.
+
+env:
+  # Firebase web config (public). BUILD: inlined into the client bundle.
+  # RUNTIME: read by src/lib/server/verifyAuth.js to verify ID tokens.
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyCvJg6JR6GyypIrLZI0Gvvsa0S6nPwZp84
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: searchora.firebaseapp.com
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: searchora
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: searchora.firebasestorage.app
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "354586137747"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:354586137747:web:3cdbeee4eaf5a847de6966
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-54JG68HTRR
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_APP_URL
+    value: https://searchora--searchora.europe-west4.hosted.app
+    availability: [BUILD, RUNTIME]
+
+  # LLM fallback chain (src/lib/llm/index.js)
+  - variable: LLM_PROVIDERS
+    value: groq,mistral,gemini
+    availability: [RUNTIME]
+  - variable: GROQ_API_KEY
+    secret: GROQ_API_KEY
+  - variable: MISTRAL_API_KEY
+    secret: MISTRAL_API_KEY
+  - variable: GEMINI_API_KEY
+    secret: GEMINI_API_KEY

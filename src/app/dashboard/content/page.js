@@ -10,6 +10,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import {
     collection, addDoc, getDocs, getDoc, doc, deleteDoc,
     query, where, serverTimestamp,
@@ -21,7 +22,7 @@ import { authFetch } from '@/lib/apiClient';
 const contentTypes = [
     {
         id: 'faq', label: 'FAQ Page', icon: HelpCircle,
-        description: 'Generate Q&A content optimized for AI citation',
+        labelKey: 'contentGen.typeFaqLabel', descKey: 'contentGen.typeFaqDesc',
         prompt: (topic, company, industry) =>
             `Generate a comprehensive FAQ page about "${topic}" for ${company || 'a business'} in ${industry || 'their industry'}. 
 Include 8-12 questions and detailed answers. Each answer should be 2-4 sentences, factual, and structured for AI retrieval. 
@@ -30,7 +31,7 @@ Format as clean markdown with clear Q&A structure.`,
     },
     {
         id: 'comparison', label: 'Comparison Article', icon: Scale,
-        description: 'vs-style content for competitive AI queries',
+        labelKey: 'contentGen.typeComparisonLabel', descKey: 'contentGen.typeComparisonDesc',
         prompt: (topic, company, industry) =>
             `Write a detailed comparison article about "${topic}" for ${company || 'a business'} in ${industry || 'their industry'}.
 Include: introduction, overview of both options, detailed feature comparison table in markdown, pros/cons for each, use cases, 
@@ -39,7 +40,7 @@ Use markdown formatting. This content should be optimized for AI tools to cite i
     },
     {
         id: 'guide', label: 'Complete Guide', icon: BookOpen,
-        description: 'In-depth educational content for topical authority',
+        labelKey: 'contentGen.typeGuideLabel', descKey: 'contentGen.typeGuideDesc',
         prompt: (topic, company, industry) =>
             `Write a comprehensive guide about "${topic}" for ${company || 'a business'} in ${industry || 'their industry'}.
 Include: introduction with a clear definition, 5-7 main sections with headers, practical tips, examples, 
@@ -49,7 +50,7 @@ This content should build topical authority and be ideal for AI citation.`,
     },
     {
         id: 'definition', label: 'Glossary / Definitions', icon: FileText,
-        description: 'Term definitions for "What is X?" queries',
+        labelKey: 'contentGen.typeDefinitionLabel', descKey: 'contentGen.typeDefinitionDesc',
         prompt: (topic, company, industry) =>
             `Create a glossary page defining key terms related to "${topic}" for ${company || 'a business'} in ${industry || 'their industry'}.
 Include 10-15 terms with clear, concise definitions (2-3 sentences each). Start each definition with "X is..." format.
@@ -57,7 +58,7 @@ Use markdown formatting with ## for each term. Make definitions factual and cita
     },
     {
         id: 'howto', label: 'How-To Article', icon: Zap,
-        description: 'Step-by-step instructional content',
+        labelKey: 'contentGen.typeHowtoLabel', descKey: 'contentGen.typeHowtoDesc',
         prompt: (topic, company, industry) =>
             `Write a step-by-step how-to guide about "${topic}" for ${company || 'a business'} in ${industry || 'their industry'}.
 Start with a brief overview (what the reader will learn and why it matters).
@@ -72,8 +73,12 @@ const VIEW_RESULT = 'result';
 const VIEW_HISTORY = 'history';
 const VIEW_DETAIL = 'detail';
 
+const dateLocales = { en: 'en-US', fr: 'fr-FR', es: 'es-ES' };
+
 export default function ContentGeneratorPage() {
     const { user } = useAuth();
+    const { t, lang } = useI18n();
+    const dateLocale = dateLocales[lang] || 'en-US';
     const [view, setView] = useState(VIEW_FORM);
 
     // Form state
@@ -283,7 +288,7 @@ words: ${content?.split(/\s+/).length || 0}
 
     /* ==================== DELETE ITEM ==================== */
     const deleteItem = async (id) => {
-        if (!confirm('Supprimer ce contenu ?')) return;
+        if (!confirm(t('contentGen.confirmDelete'))) return;
         try {
             await deleteDoc(doc(db, 'generated_content', id));
             setHistory(history.filter(h => h.id !== id));
@@ -306,14 +311,14 @@ words: ${content?.split(/\s+/).length || 0}
                         <div className="dot" />
                         <div className="dot" />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary mb-1">Generating content</h2>
+                    <h2 className="text-xl font-bold text-text-primary mb-1">{t('contentGen.generating')}</h2>
                     <p className="text-sm text-text-muted">
-                        {contentTypes.find(ct => ct.id === selectedType)?.label} · {topic}
+                        {t(contentTypes.find(ct => ct.id === selectedType)?.labelKey)} · {topic}
                     </p>
                 </div>
                 <div className="progress-bar-indeterminate rounded-full" />
                 <div className="flex items-center justify-center gap-2 text-text-muted">
-                    <span className="text-xs">Writing structured, citation-optimized content</span>
+                    <span className="text-xs">{t('contentGen.writing')}</span>
                     <span className="typing-cursor text-xs" />
                 </div>
             </div>
@@ -337,15 +342,15 @@ words: ${content?.split(/\s+/).length || 0}
                         <div>
                             <h1 className="text-xl font-bold text-text-primary">{item.topic}</h1>
                             <p className="text-xs text-text-muted">
-                                {ct?.label || item.contentType} · {item.wordCount || 0} words · {item.companyName}
-                                {item.createdAt && ` · ${new Date(item.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
+                                {ct ? t(ct.labelKey) : item.contentType} · {item.wordCount || 0} {t('contentGen.words')} · {item.companyName}
+                                {item.createdAt && ` · ${new Date(item.createdAt).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
                             </p>
                         </div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                         <Button variant="secondary" size="sm" icon={copied ? Check : Copy}
                             onClick={() => copyContent(item.content)}>
-                            {copied ? 'Copié !' : 'Copier'}
+                            {copied ? t('contentGen.copied') : t('contentGen.copy')}
                         </Button>
                         <Button variant="secondary" size="sm" icon={Download}
                             onClick={() => exportMarkdown(item)}>
@@ -357,7 +362,7 @@ words: ${content?.split(/\s+/).length || 0}
                         </Button>
                         <Button variant="secondary" size="sm" icon={Trash2}
                             onClick={() => deleteItem(item.id)}>
-                            Suppr.
+                            {t('contentGen.delete')}
                         </Button>
                     </div>
                 </div>
@@ -365,22 +370,22 @@ words: ${content?.split(/\s+/).length || 0}
                 {/* Metadata row */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Type</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.type')}</p>
                         <div className="flex items-center gap-1.5 mt-1">
                             <TypeIcon className="w-4 h-4 text-brand" />
-                            <span className="text-sm font-semibold text-text-primary">{ct?.label || item.contentType}</span>
+                            <span className="text-sm font-semibold text-text-primary">{ct ? t(ct.labelKey) : item.contentType}</span>
                         </div>
                     </Card>
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Mots</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.wordsLabel')}</p>
                         <p className="text-sm font-semibold text-text-primary mt-1">{item.wordCount || 0}</p>
                     </Card>
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Entreprise</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.company')}</p>
                         <p className="text-sm font-semibold text-text-primary mt-1">{item.companyName || '—'}</p>
                     </Card>
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Secteur</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.industry')}</p>
                         <p className="text-sm font-semibold text-text-primary mt-1">{item.industry || '—'}</p>
                     </Card>
                 </div>
@@ -408,25 +413,25 @@ words: ${content?.split(/\s+/).length || 0}
                     <div>
                         <h1 className="text-xl font-bold text-text-primary">{topic}</h1>
                         <p className="text-xs text-text-muted">
-                            {ct?.label} · {generatedContent.split(/\s+/).length} words · {companyName} · Saved ✓
+                            {ct ? t(ct.labelKey) : ''} · {generatedContent.split(/\s+/).length} {t('contentGen.words')} · {companyName} · {t('contentGen.saved')} ✓
                         </p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                         <Button variant="secondary" size="sm" icon={copied ? Check : Copy}
                             onClick={() => copyContent()}>
-                            {copied ? 'Copié !' : 'Copier'}
+                            {copied ? t('contentGen.copied') : t('contentGen.copy')}
                         </Button>
                         <Button variant="secondary" size="sm" icon={Download}
                             onClick={() => exportMarkdown()}>
-                            Export .md
+                            {t('contentGen.exportMd')}
                         </Button>
                         <Button variant="secondary" size="sm" icon={Download}
                             onClick={() => exportHTML()}>
-                            Export .html
+                            {t('contentGen.exportHtml')}
                         </Button>
                         <Button variant="secondary" size="sm" icon={RefreshCw}
                             onClick={() => { setView(VIEW_FORM); setGeneratedContent(''); }}>
-                            Nouveau
+                            {t('contentGen.new')}
                         </Button>
                     </div>
                 </div>
@@ -434,19 +439,19 @@ words: ${content?.split(/\s+/).length || 0}
                 {/* Metadata */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Type</p>
-                        <p className="text-sm font-semibold text-text-primary mt-1">{ct?.label}</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.type')}</p>
+                        <p className="text-sm font-semibold text-text-primary mt-1">{ct ? t(ct.labelKey) : ''}</p>
                     </Card>
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Mots</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.wordsLabel')}</p>
                         <p className="text-sm font-semibold text-text-primary mt-1">{generatedContent.split(/\s+/).length}</p>
                     </Card>
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Entreprise</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.company')}</p>
                         <p className="text-sm font-semibold text-text-primary mt-1">{companyName || '—'}</p>
                     </Card>
                     <Card hover={false} padding="p-3">
-                        <p className="text-[10px] text-text-muted uppercase tracking-wider">Secteur</p>
+                        <p className="text-[10px] text-text-muted uppercase tracking-wider">{t('contentGen.industry')}</p>
                         <p className="text-sm font-semibold text-text-primary mt-1">{industry || '—'}</p>
                     </Card>
                 </div>
@@ -465,11 +470,11 @@ words: ${content?.split(/\s+/).length || 0}
                 <div className="flex gap-3">
                     <Button variant="secondary" icon={Clock}
                         onClick={() => setView(VIEW_HISTORY)}>
-                        Voir l&apos;historique ({history.length})
+                        {t('contentGen.viewHistory')} ({history.length})
                     </Button>
                     <Button icon={Plus}
                         onClick={() => { setView(VIEW_FORM); setGeneratedContent(''); }}>
-                        Générer un autre
+                        {t('contentGen.generateAnother')}
                     </Button>
                 </div>
             </div>
@@ -487,19 +492,19 @@ words: ${content?.split(/\s+/).length || 0}
                             <ArrowLeft className="w-4 h-4 text-text-muted" />
                         </button>
                         <div>
-                            <h1 className="text-xl font-bold text-text-primary">Contenus générés</h1>
-                            <p className="text-xs text-text-muted">{history.length} contenu{history.length > 1 ? 's' : ''} sauvegardé{history.length > 1 ? 's' : ''}</p>
+                            <h1 className="text-xl font-bold text-text-primary">{t('contentGen.historyTitle')}</h1>
+                            <p className="text-xs text-text-muted">{history.length} {t('contentGen.historySaved')}</p>
                         </div>
                     </div>
-                    <Button size="sm" icon={Plus} onClick={() => setView(VIEW_FORM)}>Nouveau</Button>
+                    <Button size="sm" icon={Plus} onClick={() => setView(VIEW_FORM)}>{t('contentGen.new')}</Button>
                 </div>
 
                 {history.length === 0 ? (
                     <Card hover={false} padding="p-12" className="text-center">
                         <PenTool className="w-10 h-10 text-text-muted mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-text-primary mb-2">Aucun contenu</h3>
-                        <p className="text-sm text-text-secondary mb-6">Générez votre premier contenu optimisé pour l&apos;IA.</p>
-                        <Button icon={Sparkles} onClick={() => setView(VIEW_FORM)}>Commencer</Button>
+                        <h3 className="text-lg font-semibold text-text-primary mb-2">{t('contentGen.noContent')}</h3>
+                        <p className="text-sm text-text-secondary mb-6">{t('contentGen.noContentDesc')}</p>
+                        <Button icon={Sparkles} onClick={() => setView(VIEW_FORM)}>{t('contentGen.start')}</Button>
                     </Card>
                 ) : (
                     <div className="space-y-2">
@@ -514,8 +519,8 @@ words: ${content?.split(/\s+/).length || 0}
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-sm font-semibold text-text-primary truncate">{item.topic}</h3>
                                             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                                <span className="text-[10px] font-medium text-brand bg-brand-50 px-1.5 py-0.5 rounded">{ct?.label || item.contentType}</span>
-                                                <span className="text-[10px] text-text-muted">{item.wordCount || 0} mots</span>
+                                                <span className="text-[10px] font-medium text-brand bg-brand-50 px-1.5 py-0.5 rounded">{ct ? t(ct.labelKey) : item.contentType}</span>
+                                                <span className="text-[10px] text-text-muted">{item.wordCount || 0} {t('contentGen.words')}</span>
                                                 <span className="text-[10px] text-text-muted">·</span>
                                                 <span className="text-[10px] text-text-muted">{item.companyName}</span>
                                                 {item.createdAt && (
@@ -523,7 +528,7 @@ words: ${content?.split(/\s+/).length || 0}
                                                         <span className="text-[10px] text-text-muted">·</span>
                                                         <span className="text-[10px] text-text-muted flex items-center gap-0.5">
                                                             <Clock className="w-2.5 h-2.5" />
-                                                            {new Date(item.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                                                            {new Date(item.createdAt).toLocaleDateString(dateLocale, { day: 'numeric', month: 'short' })}
                                                         </span>
                                                     </>
                                                 )}
@@ -532,17 +537,17 @@ words: ${content?.split(/\s+/).length || 0}
                                         <div className="flex items-center gap-1 shrink-0">
                                             <button onClick={(e) => { e.stopPropagation(); copyContent(item.content); }}
                                                 className="p-1.5 rounded-lg hover:bg-surface-secondary transition-colors cursor-pointer"
-                                                title="Copier">
+                                                title={t('contentGen.copy')}>
                                                 <Copy className="w-3.5 h-3.5 text-text-muted" />
                                             </button>
                                             <button onClick={(e) => { e.stopPropagation(); exportMarkdown(item); }}
                                                 className="p-1.5 rounded-lg hover:bg-surface-secondary transition-colors cursor-pointer"
-                                                title="Export .md">
+                                                title={t('contentGen.exportMd')}>
                                                 <Download className="w-3.5 h-3.5 text-text-muted" />
                                             </button>
                                             <button onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }}
                                                 className="p-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                                                title="Supprimer">
+                                                title={t('contentGen.delete')}>
                                                 <Trash2 className="w-3.5 h-3.5 text-red-400" />
                                             </button>
                                             <ChevronRight className="w-4 h-4 text-text-muted ml-1" />
@@ -563,15 +568,15 @@ words: ${content?.split(/\s+/).length || 0}
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-text-primary">Content Generator</h1>
+                    <h1 className="text-2xl font-bold text-text-primary">{t('contentGen.title')}</h1>
                     <p className="text-sm text-text-secondary mt-1">
-                        Generate AI-optimized content designed to be cited by AI assistants.
+                        {t('contentGen.subtitle')}
                     </p>
                 </div>
                 {history.length > 0 && (
                     <Button variant="secondary" size="sm" icon={Clock}
                         onClick={() => setView(VIEW_HISTORY)}>
-                        Historique ({history.length})
+                        {t('contentGen.history')} ({history.length})
                     </Button>
                 )}
             </div>
@@ -581,7 +586,7 @@ words: ${content?.split(/\s+/).length || 0}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Content type selector */}
                     <Card hover={false} padding="p-5">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Content Type</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('contentGen.contentType')}</h3>
                         <div className="space-y-2">
                             {contentTypes.map((ct) => (
                                 <button key={ct.id} onClick={() => setSelectedType(ct.id)}
@@ -591,8 +596,8 @@ words: ${content?.split(/\s+/).length || 0}
                                         }`}>
                                     <ct.icon className={`w-5 h-5 shrink-0 ${selectedType === ct.id ? 'text-brand' : 'text-text-muted'}`} />
                                     <div>
-                                        <p className={`text-sm font-medium ${selectedType === ct.id ? 'text-brand' : 'text-text-primary'}`}>{ct.label}</p>
-                                        <p className="text-[10px] text-text-muted">{ct.description}</p>
+                                        <p className={`text-sm font-medium ${selectedType === ct.id ? 'text-brand' : 'text-text-primary'}`}>{t(ct.labelKey)}</p>
+                                        <p className="text-[10px] text-text-muted">{t(ct.descKey)}</p>
                                     </div>
                                 </button>
                             ))}
@@ -601,13 +606,13 @@ words: ${content?.split(/\s+/).length || 0}
 
                     {/* Topic & context */}
                     <Card hover={false} padding="p-5">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Content Details</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('contentGen.contentDetails')}</h3>
                         <div className="space-y-3">
-                            <Input label="Topic / Title" placeholder="e.g. softbox vs umbrella for portrait lighting"
+                            <Input label={t('contentGen.topicLabel')} placeholder="e.g. softbox vs umbrella for portrait lighting"
                                 value={topic} onChange={(e) => setTopic(e.target.value)} required />
-                            <Input label="Company Name" placeholder="Your brand"
+                            <Input label={t('contentGen.companyName')} placeholder="Your brand"
                                 value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-                            <Input label="Industry" placeholder="Photography, SaaS, etc."
+                            <Input label={t('contentGen.industryLabel')} placeholder="Photography, SaaS, etc."
                                 value={industry} onChange={(e) => setIndustry(e.target.value)} />
                         </div>
                     </Card>
@@ -615,7 +620,7 @@ words: ${content?.split(/\s+/).length || 0}
                     <Button size="lg" icon={Sparkles} onClick={generateContent}
                         disabled={!topic.trim()}
                         className="w-full shadow-[0_4px_16px_rgba(249,115,22,0.3)]">
-                        Generate Content
+                        {t('contentGen.generate')}
                     </Button>
 
                     {error && (
@@ -629,16 +634,15 @@ words: ${content?.split(/\s+/).length || 0}
                         <div>
                             <PenTool className="w-8 h-8 text-brand mx-auto mb-5" />
                             <h3 className="text-xl font-semibold text-text-primary mb-2">
-                                AI-Optimized Content
+                                {t('contentGen.previewTitle')}
                             </h3>
                             <p className="text-base text-text-secondary max-w-sm mx-auto leading-relaxed mb-4">
-                                Choose a content type, enter your topic, and generate content
-                                structured for maximum AI citation potential.
+                                {t('contentGen.previewDesc')}
                             </p>
                             <div className="flex items-center justify-center gap-4 text-xs text-text-muted">
-                                <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-600" /> Saved</span>
-                                <span className="flex items-center gap-1"><Download className="w-3 h-3 text-text-muted" /> Export</span>
-                                <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-text-muted" /> History</span>
+                                <span className="flex items-center gap-1"><Check className="w-3 h-3 text-green-600" /> {t('contentGen.saved')}</span>
+                                <span className="flex items-center gap-1"><Download className="w-3 h-3 text-text-muted" /> {t('contentGen.exportTag')}</span>
+                                <span className="flex items-center gap-1"><Clock className="w-3 h-3 text-text-muted" /> {t('contentGen.history')}</span>
                             </div>
                         </div>
                     </Card>
@@ -647,10 +651,10 @@ words: ${content?.split(/\s+/).length || 0}
                     {history.length > 0 && (
                         <Card hover={false} padding="p-5">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-semibold text-text-primary">Récents</h3>
+                                <h3 className="text-sm font-semibold text-text-primary">{t('contentGen.recent')}</h3>
                                 <button onClick={() => setView(VIEW_HISTORY)}
                                     className="text-xs text-brand font-medium cursor-pointer hover:underline">
-                                    Voir tout ({history.length})
+                                    {t('contentGen.viewAll')} ({history.length})
                                 </button>
                             </div>
                             <div className="space-y-2">
@@ -665,8 +669,8 @@ words: ${content?.split(/\s+/).length || 0}
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm text-text-primary truncate">{item.topic}</p>
                                                 <p className="text-[10px] text-text-muted">
-                                                    {ct?.label} · {item.wordCount || 0} mots
-                                                    {item.createdAt && ` · ${new Date(item.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`}
+                                                    {ct ? t(ct.labelKey) : ''} · {item.wordCount || 0} {t('contentGen.words')}
+                                                    {item.createdAt && ` · ${new Date(item.createdAt).toLocaleDateString(dateLocale, { day: 'numeric', month: 'short' })}`}
                                                 </p>
                                             </div>
                                             <ChevronRight className="w-3.5 h-3.5 text-text-muted shrink-0" />

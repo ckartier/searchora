@@ -9,6 +9,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import {
     doc, getDoc, setDoc, updateDoc, serverTimestamp, collection, query, where,
     getDocs, orderBy, limit,
@@ -19,28 +20,29 @@ import { db } from '@/lib/firebase';
 const plans = [
     {
         id: 'free', name: 'Free', price: '0', period: '/month',
-        features: ['1 audit/month', '3 presence tests/month', 'Basic reports'],
+        featureKeys: ['settingsPage.pfFree1', 'settingsPage.pfFree2', 'settingsPage.pfFree3'],
         color: 'bg-gray-50 border-gray-200',
     },
     {
         id: 'starter', name: 'Starter', price: '29', period: '/month',
-        features: ['5 audits/month', '20 presence tests/month', 'Full reports', 'Content Generator'],
+        featureKeys: ['settingsPage.pfStarter1', 'settingsPage.pfStarter2', 'settingsPage.pfStarter3', 'settingsPage.pfStarter4'],
         color: 'bg-blue-50 border-blue-200', popular: true,
     },
     {
         id: 'growth', name: 'Growth', price: '79', period: '/month',
-        features: ['Unlimited audits', 'Unlimited presence tests', 'Priority AI', 'Content Generator', 'API access'],
+        featureKeys: ['settingsPage.pfGrowth1', 'settingsPage.pfGrowth2', 'settingsPage.pfGrowth3', 'settingsPage.pfGrowth4', 'settingsPage.pfGrowth5'],
         color: 'bg-brand-50 border-brand-200',
     },
     {
         id: 'enterprise', name: 'Enterprise', price: '249', period: '/month',
-        features: ['Everything in Growth', 'White-label reports', 'Dedicated support', 'Custom integrations', 'Team accounts'],
+        featureKeys: ['settingsPage.pfEnt1', 'settingsPage.pfEnt2', 'settingsPage.pfEnt3', 'settingsPage.pfEnt4', 'settingsPage.pfEnt5'],
         color: 'bg-purple-50 border-purple-200',
     },
 ];
 
 export default function SettingsPage() {
     const { user } = useAuth();
+    const { t } = useI18n();
     const [activeTab, setActiveTab] = useState('profile');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -62,9 +64,9 @@ export default function SettingsPage() {
     const [usage, setUsage] = useState({ audits: 0, presenceTests: 0 });
 
     const tabs = [
-        { id: 'profile', label: 'Profile', icon: User },
-        { id: 'billing', label: 'Subscription', icon: CreditCard },
-        { id: 'notifications', label: 'Notifications', icon: Bell },
+        { id: 'profile', label: t('settingsPage.tabProfile'), icon: User },
+        { id: 'billing', label: t('settingsPage.tabBilling'), icon: CreditCard },
+        { id: 'notifications', label: t('settingsPage.tabNotifications'), icon: Bell },
     ];
 
     /* ==================== LOAD DATA ==================== */
@@ -191,8 +193,8 @@ export default function SettingsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-text-primary">Settings</h1>
-                <p className="text-sm text-text-secondary mt-0.5">Manage your account, subscription, and preferences</p>
+                <h1 className="text-2xl font-bold text-text-primary">{t('settingsPage.title')}</h1>
+                <p className="text-sm text-text-secondary mt-0.5">{t('settingsPage.subtitle')}</p>
             </div>
 
             <div className="flex gap-2 border-b border-border pb-0">
@@ -214,39 +216,39 @@ export default function SettingsPage() {
             {/* ==================== PROFILE TAB ==================== */}
             {activeTab === 'profile' && (
                 <Card hover={false} padding="p-6">
-                    <h2 className="text-lg font-semibold text-text-primary mb-6">Profile Information</h2>
+                    <h2 className="text-lg font-semibold text-text-primary mb-6">{t('settingsPage.profileInfo')}</h2>
                     <div className="space-y-4 max-w-lg">
                         <Input
-                            label="Full Name"
+                            label={t('settingsPage.fullName')}
                             value={profile.displayName}
                             onChange={(e) => setProfile({ ...profile, displayName: e.target.value })}
                             icon={User}
                         />
                         <Input
-                            label="Email"
+                            label={t('settingsPage.email')}
                             value={profile.email}
                             disabled
                         />
                         <Input
-                            label="Company Name"
+                            label={t('settingsPage.companyName')}
                             value={profile.companyName}
                             onChange={(e) => setProfile({ ...profile, companyName: e.target.value })}
                             placeholder="Your company"
                         />
                         <Input
-                            label="Website"
+                            label={t('settingsPage.website')}
                             value={profile.website}
                             onChange={(e) => setProfile({ ...profile, website: e.target.value })}
                             placeholder="https://yourcompany.com"
                         />
                         <Input
-                            label="Industry"
+                            label={t('settingsPage.industry')}
                             value={profile.industry}
                             onChange={(e) => setProfile({ ...profile, industry: e.target.value })}
                             placeholder="SaaS, E-commerce, etc."
                         />
                         <Input
-                            label="Country"
+                            label={t('settingsPage.country')}
                             value={profile.country}
                             onChange={(e) => setProfile({ ...profile, country: e.target.value })}
                             placeholder="France, US, etc."
@@ -256,7 +258,7 @@ export default function SettingsPage() {
                             onClick={saveProfile}
                             disabled={saving}
                         >
-                            {saved ? 'Saved!' : saving ? 'Saving...' : 'Save Changes'}
+                            {saved ? t('settingsPage.saved') : saving ? t('settingsPage.saving') : t('settingsPage.saveChanges')}
                         </Button>
                     </div>
                 </Card>
@@ -271,10 +273,10 @@ export default function SettingsPage() {
                             <div className="flex items-center gap-3">
                                 <Crown className="w-5 h-5 text-brand shrink-0" />
                                 <div>
-                                    <h3 className="text-base font-semibold text-text-primary">Current Plan: {currentPlan.name}</h3>
+                                    <h3 className="text-base font-semibold text-text-primary">{t('settingsPage.currentPlan')}: {currentPlan.name}</h3>
                                     <p className="text-xs text-text-muted">
-                                        {subscription?.status === 'active' ? 'Active' : 'Inactive'}
-                                        {subscription?.startedAt && ` · Since ${new Date(subscription.startedAt).toLocaleDateString()}`}
+                                        {subscription?.status === 'active' ? t('settingsPage.active') : t('settingsPage.inactive')}
+                                        {subscription?.startedAt && ` · ${t('settingsPage.since')} ${new Date(subscription.startedAt).toLocaleDateString()}`}
                                     </p>
                                 </div>
                             </div>
@@ -287,18 +289,18 @@ export default function SettingsPage() {
                         {/* Usage */}
                         <div className="grid grid-cols-2 gap-4 mt-4 p-4 bg-surface-secondary rounded-xl">
                             <div>
-                                <p className="text-xs text-text-muted">Audits ran</p>
+                                <p className="text-xs text-text-muted">{t('settingsPage.auditsRan')}</p>
                                 <p className="text-lg font-bold text-text-primary">{usage.audits}</p>
                             </div>
                             <div>
-                                <p className="text-xs text-text-muted">Presence tests</p>
+                                <p className="text-xs text-text-muted">{t('settingsPage.presenceTests')}</p>
                                 <p className="text-lg font-bold text-text-primary">{usage.presenceTests}</p>
                             </div>
                         </div>
                     </Card>
 
                     {/* Plan selection */}
-                    <h3 className="text-sm font-semibold text-text-primary">Available Plans</h3>
+                    <h3 className="text-sm font-semibold text-text-primary">{t('settingsPage.availablePlans')}</h3>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {plans.map((plan) => {
                             const isActive = plan.id === (subscription?.plan || 'free');
@@ -307,7 +309,7 @@ export default function SettingsPage() {
                                     className={`relative ${isActive ? 'ring-2 ring-brand' : ''}`}>
                                     {plan.popular && (
                                         <span className="absolute -top-2 right-3 text-[10px] font-bold text-white bg-brand px-2 py-0.5 rounded-full">
-                                            POPULAR
+                                            {t('settingsPage.popular')}
                                         </span>
                                     )}
                                     <h4 className="text-sm font-semibold text-text-primary mb-1">{plan.name}</h4>
@@ -316,15 +318,15 @@ export default function SettingsPage() {
                                         <span className="text-xs text-text-muted">{plan.period}</span>
                                     </div>
                                     <ul className="space-y-1.5 mb-4">
-                                        {plan.features.map((f) => (
+                                        {plan.featureKeys.map((f) => (
                                             <li key={f} className="text-xs text-text-secondary flex items-center gap-1.5">
-                                                <Check className="w-3 h-3 text-green-500 shrink-0" /> {f}
+                                                <Check className="w-3 h-3 text-green-500 shrink-0" /> {t(f)}
                                             </li>
                                         ))}
                                     </ul>
                                     {isActive ? (
                                         <div className="text-xs font-medium text-brand text-center py-2 bg-brand-50 rounded-lg">
-                                            Current Plan
+                                            {t('settingsPage.currentPlanBadge')}
                                         </div>
                                     ) : (
                                         <Button
@@ -333,7 +335,7 @@ export default function SettingsPage() {
                                             className="w-full"
                                             onClick={() => changePlan(plan.id)}
                                         >
-                                            {plan.price === '0' ? 'Downgrade' : 'Upgrade'}
+                                            {plan.price === '0' ? t('settingsPage.downgrade') : t('settingsPage.upgrade')}
                                         </Button>
                                     )}
                                 </Card>
@@ -346,13 +348,13 @@ export default function SettingsPage() {
             {/* ==================== NOTIFICATIONS TAB ==================== */}
             {activeTab === 'notifications' && (
                 <Card hover={false} padding="p-6">
-                    <h2 className="text-lg font-semibold text-text-primary mb-6">Notification Preferences</h2>
+                    <h2 className="text-lg font-semibold text-text-primary mb-6">{t('settingsPage.notifPrefs')}</h2>
                     <div className="space-y-4">
                         {[
-                            { label: 'Weekly visibility reports', description: 'Receive a weekly summary of your AI visibility score' },
-                            { label: 'New citation alerts', description: 'Get notified when your brand is cited in a new AI answer' },
-                            { label: 'Competitor alerts', description: 'Get notified when competitors gain or lose visibility' },
-                            { label: 'Recommendation updates', description: 'New recommendations based on latest analysis' },
+                            { label: t('settingsPage.notifWeekly'), description: t('settingsPage.notifWeeklyDesc') },
+                            { label: t('settingsPage.notifCitations'), description: t('settingsPage.notifCitationsDesc') },
+                            { label: t('settingsPage.notifCompetitors'), description: t('settingsPage.notifCompetitorsDesc') },
+                            { label: t('settingsPage.notifRecs'), description: t('settingsPage.notifRecsDesc') },
                         ].map((pref) => (
                             <div key={pref.label} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
                                 <div>

@@ -32,6 +32,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Card from '@/components/ui/Card';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { saveFullAudit } from '@/lib/firestoreAudit';
 import { authFetch } from '@/lib/apiClient';
 
@@ -85,6 +86,7 @@ export default function AuditPage() {
 
     const router = useRouter();
     const { user } = useAuth();
+    const { t } = useI18n();
     const progressRef = useRef(null);
 
     useEffect(() => {
@@ -174,10 +176,10 @@ export default function AuditPage() {
     /* ==================== LOADING STATE ==================== */
     if (loading) {
         const phases = [
-            { label: 'Crawling pages', icon: Globe },
-            { label: 'Extracting content', icon: FileText },
-            { label: 'Scoring AI-readiness', icon: BarChart3 },
-            { label: 'AI analysis', icon: Sparkles },
+            { label: t('audit.phaseCrawling'), icon: Globe },
+            { label: t('audit.phaseExtracting'), icon: FileText },
+            { label: t('audit.phaseScoring'), icon: BarChart3 },
+            { label: t('audit.phaseAnalysis'), icon: Sparkles },
         ];
         const currentPhase = Math.min(progress.length, phases.length - 1);
 
@@ -191,7 +193,7 @@ export default function AuditPage() {
                         <div className="dot" />
                     </div>
                     <h2 className="text-xl font-bold text-text-primary mb-1">
-                        Analyzing {form.companyName || form.websiteUrl}
+                        {t('audit.analyzing')} {form.companyName || form.websiteUrl}
                     </h2>
                     <p className="text-sm text-text-muted">
                         {phases[currentPhase]?.label}...
@@ -262,9 +264,9 @@ export default function AuditPage() {
                 {/* Header */}
                 <div className="text-center mb-4">
                     <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-text-primary mb-1">Audit Complete</h2>
+                    <h2 className="text-2xl font-bold text-text-primary mb-1">{t('audit.complete')}</h2>
                     <p className="text-sm text-text-secondary">
-                        {crawl.pagesCrawled || 0} pages analyzed · {audit.companyName || audit.website}
+                        {crawl.pagesCrawled || 0} {t('audit.pagesAnalyzed')} · {audit.companyName || audit.website}
                     </p>
                 </div>
 
@@ -272,7 +274,7 @@ export default function AuditPage() {
                 <div className="grid lg:grid-cols-5 gap-6">
                     {/* Main score */}
                     <Card hover={false} padding="p-8" className="lg:col-span-2 text-center">
-                        <p className="text-[10px] font-semibold uppercase tracking-widest text-brand mb-3">AI Visibility Score</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-brand mb-3">{t('audit.aiVisibilityScore')}</p>
                         <div className="text-6xl font-bold text-text-primary mb-2">{audit.visibilityScore}%</div>
                         <div className="w-full bg-surface-secondary rounded-full h-3 mb-3">
                             <div className="bg-brand rounded-full h-3 transition-all duration-1000" style={{ width: `${audit.visibilityScore}%` }} />
@@ -282,15 +284,15 @@ export default function AuditPage() {
 
                     {/* Sub-scores */}
                     <Card hover={false} padding="p-6" className="lg:col-span-3">
-                        <h3 className="text-sm font-semibold text-text-primary mb-4">Score Breakdown</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-4">{t('audit.scoreBreakdown')}</h3>
                         <div className="space-y-3">
-                            <SubScoreBar label="Content Clarity" value={sub.contentClarity || 0} icon={FileText} />
-                            <SubScoreBar label="FAQ Coverage" value={sub.faqCoverage || 0} icon={HelpCircle} />
-                            <SubScoreBar label="Answer Readiness" value={sub.structuredAnswerReadiness || 0} icon={Zap} />
-                            <SubScoreBar label="Topical Authority" value={sub.topicalAuthority || 0} icon={BookOpen} />
-                            <SubScoreBar label="Comparison Content" value={sub.comparisonContent || 0} icon={Scale} />
-                            <SubScoreBar label="Educational Depth" value={sub.educationalDepth || 0} icon={Layers} />
-                            <SubScoreBar label="Technical Readiness" value={sub.technicalReadiness || 0} icon={Shield} />
+                            <SubScoreBar label={t('audit.subClarity')} value={sub.contentClarity || 0} icon={FileText} />
+                            <SubScoreBar label={t('audit.subFaq')} value={sub.faqCoverage || 0} icon={HelpCircle} />
+                            <SubScoreBar label={t('audit.subAnswer')} value={sub.structuredAnswerReadiness || 0} icon={Zap} />
+                            <SubScoreBar label={t('audit.subAuthority')} value={sub.topicalAuthority || 0} icon={BookOpen} />
+                            <SubScoreBar label={t('audit.subComparison')} value={sub.comparisonContent || 0} icon={Scale} />
+                            <SubScoreBar label={t('audit.subEducational')} value={sub.educationalDepth || 0} icon={Layers} />
+                            <SubScoreBar label={t('audit.subTechnical')} value={sub.technicalReadiness || 0} icon={Shield} />
                         </div>
                     </Card>
                 </div>
@@ -302,7 +304,7 @@ export default function AuditPage() {
                             <Sparkles className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-semibold text-text-primary mb-2">Executive Summary</h3>
+                            <h3 className="text-sm font-semibold text-text-primary mb-2">{t('audit.executiveSummary')}</h3>
                             <p className="text-sm text-text-secondary leading-relaxed">{audit.summary}</p>
                         </div>
                     </div>
@@ -311,10 +313,10 @@ export default function AuditPage() {
                 {/* ---- CRAWL STATS ---- */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { label: 'Pages Crawled', value: crawl.pagesCrawled || 0, icon: BarChart3 },
-                        { label: 'Avg Words/Page', value: crawl.siteSignals?.avgWordCount || 0, icon: FileText },
-                        { label: 'Schema Adoption', value: `${crawl.siteSignals?.schemaAdoption || 0}%`, icon: Shield },
-                        { label: 'FAQ Pages Found', value: crawl.siteSignals?.faqPages || 0, icon: HelpCircle },
+                        { label: t('audit.statPagesCrawled'), value: crawl.pagesCrawled || 0, icon: BarChart3 },
+                        { label: t('audit.statAvgWords'), value: crawl.siteSignals?.avgWordCount || 0, icon: FileText },
+                        { label: t('audit.statSchema'), value: `${crawl.siteSignals?.schemaAdoption || 0}%`, icon: Shield },
+                        { label: t('audit.statFaqPages'), value: crawl.siteSignals?.faqPages || 0, icon: HelpCircle },
                     ].map((s) => (
                         <Card key={s.label} hover={false} padding="p-4">
                             <s.icon className="w-4 h-4 text-brand mb-2" />
@@ -328,7 +330,7 @@ export default function AuditPage() {
                 <div className="grid lg:grid-cols-2 gap-6">
                     <Card hover={false} padding="p-6">
                         <h3 className="text-sm font-semibold text-green-600 mb-3 flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4" /> Strengths
+                            <CheckCircle2 className="w-4 h-4" /> {t('audit.strengths')}
                         </h3>
                         <ul className="space-y-2">
                             {(audit.strengths || []).map((s, i) => (
@@ -340,7 +342,7 @@ export default function AuditPage() {
                     </Card>
                     <Card hover={false} padding="p-6">
                         <h3 className="text-sm font-semibold text-red-500 mb-3 flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4" /> Weaknesses
+                            <AlertTriangle className="w-4 h-4" /> {t('audit.weaknesses')}
                         </h3>
                         <ul className="space-y-2">
                             {(audit.weaknesses || []).map((w, i) => (
@@ -354,7 +356,7 @@ export default function AuditPage() {
 
                 {/* ---- PAGE TYPES ---- */}
                 <Card hover={false} padding="p-6">
-                    <h3 className="text-sm font-semibold text-text-primary mb-3">Page Types Discovered</h3>
+                    <h3 className="text-sm font-semibold text-text-primary mb-3">{t('audit.pageTypes')}</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                         {Object.entries(crawl.pageTypes || {}).map(([type, count]) => (
                             <div key={type} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
@@ -368,7 +370,7 @@ export default function AuditPage() {
                 {/* ---- CONTENT GAPS ---- */}
                 {(crawl.contentGaps || []).length > 0 && (
                     <Card hover={false} padding="p-6">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Content Gaps</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('audit.contentGaps')}</h3>
                         <div className="space-y-2">
                             {crawl.contentGaps.map((gap, i) => (
                                 <div key={i} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-xl">
@@ -387,7 +389,7 @@ export default function AuditPage() {
 
                 {/* ---- PRIORITY ACTIONS ---- */}
                 <Card hover={false} padding="p-6">
-                    <h3 className="text-sm font-semibold text-text-primary mb-3">Priority Actions</h3>
+                    <h3 className="text-sm font-semibold text-text-primary mb-3">{t('audit.priorityActions')}</h3>
                     <div className="space-y-3">
                         {(audit.priorityActions || []).map((a, i) => (
                             <div key={i} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-xl">
@@ -411,7 +413,7 @@ export default function AuditPage() {
                 {/* ---- RECOMMENDATIONS ---- */}
                 <Card hover={false} padding="p-6">
                     <h3 className="text-sm font-semibold text-text-primary mb-3">
-                        Recommendations ({(audit.recommendations || []).length})
+                        {t('audit.recommendations')} ({(audit.recommendations || []).length})
                     </h3>
                     <div className="space-y-2">
                         {(audit.recommendations || []).map((rec, i) => (
@@ -432,8 +434,8 @@ export default function AuditPage() {
 
                 {/* ---- SUGGESTED PAGES ---- */}
                 <Card hover={false} padding="p-6">
-                    <h3 className="text-sm font-semibold text-text-primary mb-1">Suggested Pages to Create</h3>
-                    <p className="text-xs text-text-muted mb-3">Based on crawl analysis and content gap detection.</p>
+                    <h3 className="text-sm font-semibold text-text-primary mb-1">{t('audit.suggestedPages')}</h3>
+                    <p className="text-xs text-text-muted mb-3">{t('audit.suggestedPagesDesc')}</p>
                     <div className="grid sm:grid-cols-2 gap-3">
                         {(audit.suggestedPages || []).map((page, i) => (
                             <div key={i} className="flex items-start gap-3 p-3 bg-surface-secondary rounded-xl">
@@ -457,8 +459,8 @@ export default function AuditPage() {
 
                 {/* ---- FAQ SUGGESTIONS ---- */}
                 <Card hover={false} padding="p-6">
-                    <h3 className="text-sm font-semibold text-text-primary mb-1">FAQ Suggestions</h3>
-                    <p className="text-xs text-text-muted mb-3">Questions your website should answer to improve AI visibility.</p>
+                    <h3 className="text-sm font-semibold text-text-primary mb-1">{t('audit.faqSuggestions')}</h3>
+                    <p className="text-xs text-text-muted mb-3">{t('audit.faqSuggestionsDesc')}</p>
                     <div className="grid sm:grid-cols-2 gap-2">
                         {(audit.faqSuggestions || []).map((q, i) => (
                             <div key={i} className="flex items-start gap-2 p-3 bg-surface-secondary rounded-xl">
@@ -472,7 +474,7 @@ export default function AuditPage() {
                 {/* ---- COMPETITOR ANALYSIS ---- */}
                 {(audit.competitorAnalysis || []).length > 0 && (
                     <Card hover={false} padding="p-6">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Competitor Comparison</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('audit.competitorComparison')}</h3>
                         <div className="space-y-3">
                             {audit.competitorAnalysis.map((c, i) => (
                                 <div key={i} className="p-4 bg-surface-secondary rounded-xl">
@@ -482,11 +484,11 @@ export default function AuditPage() {
                                     </div>
                                     <div className="grid sm:grid-cols-2 gap-3">
                                         <div>
-                                            <p className="text-[10px] font-medium text-green-600 uppercase tracking-wider mb-1">Their advantage</p>
+                                            <p className="text-[10px] font-medium text-green-600 uppercase tracking-wider mb-1">{t('audit.theirAdvantage')}</p>
                                             <p className="text-sm text-text-secondary">{c.advantage}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-medium text-red-500 uppercase tracking-wider mb-1">Your gap</p>
+                                            <p className="text-[10px] font-medium text-red-500 uppercase tracking-wider mb-1">{t('audit.yourGap')}</p>
                                             <p className="text-sm text-text-secondary">{c.gap}</p>
                                         </div>
                                     </div>
@@ -499,21 +501,21 @@ export default function AuditPage() {
                 {/* ---- EXECUTIVE REPORT ---- */}
                 {audit.report && (
                     <Card hover={false} padding="p-6" className="border-gray-300">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Executive Report</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('audit.executiveReport')}</h3>
                         <p className="text-sm text-text-secondary leading-relaxed mb-4">{audit.report.report}</p>
                         <div className="grid sm:grid-cols-2 gap-4 mb-4">
                             <div className="p-3 bg-red-50 rounded-xl">
-                                <p className="text-[10px] font-medium text-red-500 uppercase tracking-wider mb-1">Biggest Issue</p>
+                                <p className="text-[10px] font-medium text-red-500 uppercase tracking-wider mb-1">{t('audit.biggestIssue')}</p>
                                 <p className="text-sm text-text-primary">{audit.report.biggestIssue}</p>
                             </div>
                             <div className="p-3 bg-green-50 rounded-xl">
-                                <p className="text-[10px] font-medium text-green-600 uppercase tracking-wider mb-1">Best Opportunity</p>
+                                <p className="text-[10px] font-medium text-green-600 uppercase tracking-wider mb-1">{t('audit.bestOpportunity')}</p>
                                 <p className="text-sm text-text-primary">{audit.report.bestOpportunity}</p>
                             </div>
                         </div>
                         {audit.report.recommendedNextSteps?.length > 0 && (
                             <div>
-                                <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-2">Recommended Next Steps</p>
+                                <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-2">{t('audit.nextSteps')}</p>
                                 <ol className="space-y-1.5">
                                     {audit.report.recommendedNextSteps.map((s, i) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-text-secondary">
@@ -529,7 +531,7 @@ export default function AuditPage() {
                 {/* ---- CRAWLED PAGES ---- */}
                 <Card hover={false} padding="p-6">
                     <h3 className="text-sm font-semibold text-text-primary mb-3">
-                        Crawled Pages ({crawl.pages?.length || 0})
+                        {t('audit.crawledPages')} ({crawl.pages?.length || 0})
                     </h3>
                     <div className="space-y-1.5 max-h-96 overflow-y-auto">
                         {(crawl.pages || [])
@@ -556,8 +558,8 @@ export default function AuditPage() {
 
                 {/* ---- ACTIONS ---- */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <Button size="lg" onClick={() => router.push('/dashboard')}>Go to Dashboard</Button>
-                    <Button variant="secondary" size="lg" onClick={() => { setResult(null); setStep(1); }}>Run Another Audit</Button>
+                    <Button size="lg" onClick={() => router.push('/dashboard')}>{t('audit.goToDashboard')}</Button>
+                    <Button variant="secondary" size="lg" onClick={() => { setResult(null); setStep(1); }}>{t('audit.runAnother')}</Button>
                 </div>
             </div>
         );
@@ -568,9 +570,9 @@ export default function AuditPage() {
     return (
         <div className="max-w-2xl mx-auto">
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-text-primary">Run New Audit</h1>
+                <h1 className="text-2xl font-bold text-text-primary">{t('audit.title')}</h1>
                 <p className="text-sm text-text-secondary mt-1">
-                    Our crawler will analyze your website, extract content, and generate a full AI visibility report.
+                    {t('audit.subtitle')}
                 </p>
             </div>
 
@@ -589,32 +591,32 @@ export default function AuditPage() {
                 {step === 1 && (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-lg font-semibold text-text-primary mb-1">Website Details</h2>
-                            <p className="text-sm text-text-secondary">Enter the website you want to audit.</p>
+                            <h2 className="text-lg font-semibold text-text-primary mb-1">{t('audit.step1Title')}</h2>
+                            <p className="text-sm text-text-secondary">{t('audit.step1Desc')}</p>
                         </div>
-                        <Input label="Website URL" name="websiteUrl" placeholder="https://yourcompany.com" icon={Globe} value={form.websiteUrl} onChange={handleChange} required />
-                        <Input label="Company Name" name="companyName" placeholder="Your Company" icon={Building2} value={form.companyName} onChange={handleChange} required />
+                        <Input label={t('audit.websiteUrl')} name="websiteUrl" placeholder="https://yourcompany.com" icon={Globe} value={form.websiteUrl} onChange={handleChange} required />
+                        <Input label={t('audit.companyName')} name="companyName" placeholder="Your Company" icon={Building2} value={form.companyName} onChange={handleChange} required />
                     </div>
                 )}
                 {step === 2 && (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-lg font-semibold text-text-primary mb-1">Competitors</h2>
-                            <p className="text-sm text-text-secondary">Add up to 3 competitor URLs (optional).</p>
+                            <h2 className="text-lg font-semibold text-text-primary mb-1">{t('audit.step2Title')}</h2>
+                            <p className="text-sm text-text-secondary">{t('audit.step2Desc')}</p>
                         </div>
                         {form.competitors.map((comp, i) => (
-                            <Input key={i} label={`Competitor ${i + 1}`} placeholder="https://competitor.com" icon={Target} value={comp} onChange={(e) => handleCompetitorChange(i, e.target.value)} />
+                            <Input key={i} label={`${t('audit.competitorN')} ${i + 1}`} placeholder="https://competitor.com" icon={Target} value={comp} onChange={(e) => handleCompetitorChange(i, e.target.value)} />
                         ))}
                     </div>
                 )}
                 {step === 3 && (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-lg font-semibold text-text-primary mb-1">Industry & Region</h2>
-                            <p className="text-sm text-text-secondary">More context improves analysis accuracy.</p>
+                            <h2 className="text-lg font-semibold text-text-primary mb-1">{t('audit.step3Title')}</h2>
+                            <p className="text-sm text-text-secondary">{t('audit.step3Desc')}</p>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Industry</label>
+                            <label className="block text-sm font-medium text-text-primary mb-2">{t('audit.industry')}</label>
                             <div className="grid grid-cols-2 gap-2">
                                 {industries.map((ind) => (
                                     <button key={ind} onClick={() => setForm((p) => ({ ...p, industry: ind }))}
@@ -624,7 +626,7 @@ export default function AuditPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-text-primary mb-2">Country</label>
+                            <label className="block text-sm font-medium text-text-primary mb-2">{t('audit.country')}</label>
                             <div className="grid grid-cols-2 gap-2">
                                 {countries.map((c) => (
                                     <button key={c} onClick={() => setForm((p) => ({ ...p, country: c }))}
@@ -638,14 +640,14 @@ export default function AuditPage() {
                 {step === 4 && (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-lg font-semibold text-text-primary mb-1">Review & Launch</h2>
-                            <p className="text-sm text-text-secondary">Confirm your details. The audit typically takes 30-60 seconds.</p>
+                            <h2 className="text-lg font-semibold text-text-primary mb-1">{t('audit.step4Title')}</h2>
+                            <p className="text-sm text-text-secondary">{t('audit.step4Desc')}</p>
                         </div>
                         <div className="space-y-3">
                             {[
-                                ['Website', form.websiteUrl], ['Company', form.companyName],
-                                ['Industry', form.industry], ['Country', form.country],
-                                ['Competitors', form.competitors.filter(Boolean).length || 'None'],
+                                [t('audit.reviewWebsite'), form.websiteUrl], [t('audit.reviewCompany'), form.companyName],
+                                [t('audit.industry'), form.industry], [t('audit.country'), form.country],
+                                [t('audit.reviewCompetitors'), form.competitors.filter(Boolean).length || t('audit.reviewNone')],
                             ].map(([label, val]) => (
                                 <div key={label} className="flex justify-between p-3 bg-surface-secondary rounded-xl">
                                     <span className="text-sm text-text-secondary">{label}</span>
@@ -657,10 +659,9 @@ export default function AuditPage() {
                             <div className="flex items-start gap-3">
                                 <Zap className="w-5 h-5 text-brand mt-0.5 shrink-0" />
                                 <div>
-                                    <p className="text-sm font-medium text-text-primary">Full audit pipeline</p>
+                                    <p className="text-sm font-medium text-text-primary">{t('audit.pipelineTitle')}</p>
                                     <p className="text-xs text-text-secondary mt-1">
-                                        Crawl pages → Extract content → Classify types → Score AI-readiness →
-                                        Generate recommendations → Build executive report
+                                        {t('audit.pipelineDesc')}
                                     </p>
                                 </div>
                             </div>
@@ -673,10 +674,10 @@ export default function AuditPage() {
                 )}
 
                 <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-                    <Button variant="ghost" icon={ArrowLeft} onClick={() => setStep(step - 1)} disabled={step === 1}>Back</Button>
+                    <Button variant="ghost" icon={ArrowLeft} onClick={() => setStep(step - 1)} disabled={step === 1}>{t('audit.back')}</Button>
                     {step < totalSteps
-                        ? <Button icon={ArrowRight} iconPosition="right" onClick={() => setStep(step + 1)} disabled={step === 1 && !form.websiteUrl}>Continue</Button>
-                        : <Button icon={Zap} onClick={runAudit} disabled={!form.websiteUrl}>Run Audit</Button>
+                        ? <Button icon={ArrowRight} iconPosition="right" onClick={() => setStep(step + 1)} disabled={step === 1 && !form.websiteUrl}>{t('audit.continue')}</Button>
+                        : <Button icon={Zap} onClick={runAudit} disabled={!form.websiteUrl}>{t('audit.runAudit')}</Button>
                     }
                 </div>
             </Card>

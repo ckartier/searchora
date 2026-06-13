@@ -164,16 +164,16 @@ export default function PresencePage() {
                         <div className="dot" />
                     </div>
                     <h2 className="text-xl font-bold text-text-primary mb-1">
-                        Testing AI Presence
+                        {t('presence.testing')}
                     </h2>
                     <p className="text-sm text-text-muted">
-                        {progress?.message || 'Sending prompts to AI...'}
+                        {progress?.message || t('presence.sendingPrompts')}
                     </p>
                 </div>
                 {progress?.total > 0 ? (
                     <div>
                         <div className="flex justify-between text-sm text-text-muted mb-2">
-                            <span>Progress</span>
+                            <span>{t('presence.progress')}</span>
                             <span>{progress.current}/{progress.total}</span>
                         </div>
                         <div className="w-full bg-surface-secondary rounded-full h-2">
@@ -187,7 +187,7 @@ export default function PresencePage() {
                     <div className="progress-bar-indeterminate rounded-full" />
                 )}
                 <div className="flex items-center justify-center gap-2 text-text-muted">
-                    <span className="text-sm">Analyzing AI responses for brand mentions</span>
+                    <span className="text-sm">{t('presence.analyzing')}</span>
                     <span className="typing-cursor" />
                 </div>
             </div>
@@ -206,15 +206,15 @@ export default function PresencePage() {
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-text-primary">Presence Test Results</h1>
+                        <h1 className="text-2xl font-bold text-text-primary">{t('presence.resultsTitle')}</h1>
                         <p className="text-sm text-text-secondary mt-1">
-                            {result.domain} · {result.promptCount} prompts tested · {Math.round(result.duration / 1000)}s
+                            {result.domain} · {result.promptCount} {t('presence.promptsTested')} · {Math.round(result.duration / 1000)}s
                         </p>
                     </div>
                     <div className="flex gap-2">
                         <Button variant="secondary" size="sm" icon={RefreshCw}
                             onClick={() => setResult(null)}>
-                            New Test
+                            {t('presence.newTest')}
                         </Button>
                     </div>
                 </div>
@@ -224,33 +224,33 @@ export default function PresencePage() {
                     <Card hover={false} padding="p-5" className={scoreBg}>
                         <Eye className={`w-5 h-5 ${scoreColor} mb-2`} />
                         <div className={`text-3xl font-bold ${scoreColor}`}>{result.presenceRate}%</div>
-                        <div className="text-[11px] text-text-muted mt-1">Presence Rate</div>
+                        <div className="text-[11px] text-text-muted mt-1">{t('presence.presenceRate')}</div>
                     </Card>
                     <Card hover={false} padding="p-5">
                         <CheckCircle2 className="w-5 h-5 text-green-500 mb-2" />
                         <div className="text-3xl font-bold text-text-primary">
                             {result.totalMentions}/{result.promptCount}
                         </div>
-                        <div className="text-[11px] text-text-muted mt-1">Prompts with Mention</div>
+                        <div className="text-[11px] text-text-muted mt-1">{t('presence.promptsWithMention')}</div>
                     </Card>
                     <Card hover={false} padding="p-5">
                         <TrendingUp className="w-5 h-5 text-blue-500 mb-2" />
                         <div className="text-3xl font-bold text-text-primary">
                             {result.avgPosition > 0 ? `#${result.avgPosition}` : '—'}
                         </div>
-                        <div className="text-[11px] text-text-muted mt-1">Avg Position</div>
+                        <div className="text-[11px] text-text-muted mt-1">{t('presence.avgPosition')}</div>
                     </Card>
                     <Card hover={false} padding="p-5">
                         <Target className="w-5 h-5 text-orange-500 mb-2" />
                         <div className="text-3xl font-bold text-text-primary">{result.totalCompetitorMentions}</div>
-                        <div className="text-[11px] text-text-muted mt-1">Competitor Mentions</div>
+                        <div className="text-[11px] text-text-muted mt-1">{t('presence.competitorMentions')}</div>
                     </Card>
                 </div>
 
                 {/* Per-prompt results */}
                 <Card hover={false} padding="p-6">
                     <h3 className="text-sm font-semibold text-text-primary mb-4">
-                        Per-Prompt Results
+                        {t('presence.perPrompt')}
                     </h3>
                     <div className="space-y-3">
                         {result.results.map((r, i) => (
@@ -264,7 +264,7 @@ export default function PresencePage() {
                     <Card hover={false} padding="p-6">
                         <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center gap-2">
                             <Trophy className="w-4 h-4 text-yellow-500" />
-                            Domain Leaderboard
+                            {t('presence.domainLeaderboard')}
                         </h3>
                         <div className="space-y-2">
                             {result.domainLeaderboard.slice(0, 10).map((d, i) => (
@@ -281,14 +281,14 @@ export default function PresencePage() {
                                             {d.domain}
                                         </span>
                                         {d.isClient && (
-                                            <span className="text-[10px] font-medium bg-green-100 text-green-700 px-1.5 py-0.5 rounded">YOU</span>
+                                            <span className="text-[10px] font-medium bg-green-100 text-green-700 px-1.5 py-0.5 rounded">{t('presence.you')}</span>
                                         )}
                                         {d.isCompetitor && (
-                                            <span className="text-[10px] font-medium bg-red-100 text-red-600 px-1.5 py-0.5 rounded">COMPETITOR</span>
+                                            <span className="text-[10px] font-medium bg-red-100 text-red-600 px-1.5 py-0.5 rounded">{t('presence.competitorTag')}</span>
                                         )}
                                     </div>
                                     <span className="text-sm font-bold text-text-primary">
-                                        {d.mentions} mention{d.mentions > 1 ? 's' : ''}
+                                        {d.mentions} {d.mentions > 1 ? t('presence.mentions') : t('presence.mention')}
                                     </span>
                                 </div>
                             ))}
@@ -300,11 +300,11 @@ export default function PresencePage() {
                 {result.competitorLeaderboard?.length > 0 && (
                     <Card hover={false} padding="p-6">
                         <h3 className="text-sm font-semibold text-text-primary mb-4">
-                            Competitor Presence Comparison
+                            {t('presence.comparisonTitle')}
                         </h3>
                         <div className="space-y-3">
                             {/* Client bar */}
-                            <PresenceBar value={result.presenceRate} label={`${result.domain} (you)`} />
+                            <PresenceBar value={result.presenceRate} label={`${result.domain} ${t('presence.youSuffix')}`} />
                             {/* Competitor bars */}
                             {result.competitorLeaderboard.map((c) => (
                                 <PresenceBar key={c.domain} value={c.presenceRate} label={c.domain} />
@@ -321,9 +321,9 @@ export default function PresencePage() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-text-primary">AI Presence Tester</h1>
+                <h1 className="text-2xl font-bold text-text-primary">{t('presence.title')}</h1>
                 <p className="text-sm text-text-secondary mt-1">
-                    Test if your brand appears in AI-generated answers. Simulate user queries and see who gets cited.
+                    {t('presence.subtitle')}
                 </p>
             </div>
 
@@ -332,10 +332,9 @@ export default function PresencePage() {
                 <div className="flex items-start gap-3">
                     <Info className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
                     <div>
-                        <p className="text-sm font-medium text-text-primary">How it works</p>
+                        <p className="text-sm font-medium text-text-primary">{t('presence.howItWorks')}</p>
                         <p className="text-xs text-text-secondary mt-1">
-                            We send your prompts to an AI model and analyze the response for domain mentions,
-                            brand references, competitor citations, and position estimates.
+                            {t('presence.howItWorksDesc')}
                         </p>
                     </div>
                 </div>
@@ -346,10 +345,10 @@ export default function PresencePage() {
                 {/* Left — Domain & Pages */}
                 <div className="space-y-6">
                     <Card hover={false} padding="p-6">
-                        <h3 className="text-sm font-semibold text-text-primary mb-4">Your Brand</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-4">{t('presence.yourBrand')}</h3>
                         <div className="space-y-4">
                             <Input
-                                label="Domain"
+                                label={t('presence.domain')}
                                 placeholder="prophot.com"
                                 icon={Globe}
                                 value={domain}
@@ -357,7 +356,7 @@ export default function PresencePage() {
                                 required
                             />
                             <Input
-                                label="Company Name"
+                                label={t('presence.companyName')}
                                 placeholder="ProPhot"
                                 icon={Target}
                                 value={companyName}
@@ -368,10 +367,10 @@ export default function PresencePage() {
 
                     <Card hover={false} padding="p-6">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-text-primary">Tracked Pages</h3>
+                            <h3 className="text-sm font-semibold text-text-primary">{t('presence.trackedPages')}</h3>
                             <button onClick={() => addField(setTrackedPages, trackedPages)}
                                 className="text-xs text-brand hover:text-brand-600 font-medium flex items-center gap-1 cursor-pointer">
-                                <Plus className="w-3 h-3" /> Add
+                                <Plus className="w-3 h-3" /> {t('presence.add')}
                             </button>
                         </div>
                         <div className="space-y-2">
@@ -396,10 +395,10 @@ export default function PresencePage() {
 
                     <Card hover={false} padding="p-6">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-text-primary">Competitors</h3>
+                            <h3 className="text-sm font-semibold text-text-primary">{t('presence.competitors')}</h3>
                             <button onClick={() => addField(setCompetitors, competitors)}
                                 className="text-xs text-brand hover:text-brand-600 font-medium flex items-center gap-1 cursor-pointer">
-                                <Plus className="w-3 h-3" /> Add
+                                <Plus className="w-3 h-3" /> {t('presence.add')}
                             </button>
                         </div>
                         <div className="space-y-2">
@@ -428,15 +427,15 @@ export default function PresencePage() {
                     <Card hover={false} padding="p-6">
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <h3 className="text-sm font-semibold text-text-primary">Test Prompts</h3>
+                                <h3 className="text-sm font-semibold text-text-primary">{t('presence.testPrompts')}</h3>
                                 <p className="text-xs text-text-muted mt-0.5">
-                                    Queries users might ask AI about your industry (max 20)
+                                    {t('presence.promptsHint')}
                                 </p>
                             </div>
                             <button onClick={() => addField(setPrompts, prompts)}
                                 disabled={prompts.length >= 20}
                                 className="text-xs text-brand hover:text-brand-600 font-medium flex items-center gap-1 cursor-pointer disabled:opacity-50">
-                                <Plus className="w-3 h-3" /> Add
+                                <Plus className="w-3 h-3" /> {t('presence.add')}
                             </button>
                         </div>
                         <div className="space-y-2">
@@ -470,7 +469,7 @@ export default function PresencePage() {
                         disabled={!domain || prompts.filter(Boolean).length === 0}
                         className="w-full shadow-[0_4px_16px_rgba(249,115,22,0.3)]"
                     >
-                        Run Presence Test ({prompts.filter(Boolean).length} prompts)
+                        {t('presence.runTest')} ({prompts.filter(Boolean).length} {t('presence.promptsCount')})
                     </Button>
 
                     {error && (
@@ -484,7 +483,7 @@ export default function PresencePage() {
             {/* Test history */}
             {history.length > 0 && (
                 <Card hover={false} padding="p-6">
-                    <h3 className="text-sm font-semibold text-text-primary mb-4">Recent Tests</h3>
+                    <h3 className="text-sm font-semibold text-text-primary mb-4">{t('presence.recentTests')}</h3>
                     <div className="space-y-2">
                         {history.map((test) => (
                             <div key={test.id} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
@@ -517,6 +516,7 @@ export default function PresencePage() {
 
 /* ==================== PROMPT RESULT COMPONENT ==================== */
 function PromptResult({ result: r, index }) {
+    const { t } = useI18n();
     const [expanded, setExpanded] = useState(false);
 
     return (
@@ -544,23 +544,23 @@ function PromptResult({ result: r, index }) {
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         {r.clientMentioned && (
                             <span className="text-[10px] font-medium text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
-                                {r.brandMentionType === 'domain+brand' ? 'Domain + Brand' :
-                                    r.brandMentionType === 'domain' ? 'Domain cited' :
-                                        r.brandMentionType === 'brand' ? 'Brand mentioned' : 'Mentioned'}
+                                {r.brandMentionType === 'domain+brand' ? t('presence.domainBrand') :
+                                    r.brandMentionType === 'domain' ? t('presence.domainCited') :
+                                        r.brandMentionType === 'brand' ? t('presence.brandMentioned') : t('presence.mentioned')}
                             </span>
                         )}
                         {r.positionEstimate > 0 && (
                             <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
-                                Position #{r.positionEstimate}
+                                {t('presence.position')} #{r.positionEstimate}
                             </span>
                         )}
                         {r.competitorMentions.length > 0 && (
                             <span className="text-[10px] font-medium text-red-500 bg-red-50 px-1.5 py-0.5 rounded">
-                                {r.competitorMentions.length} competitor{r.competitorMentions.length > 1 ? 's' : ''}
+                                {r.competitorMentions.length} {t('presence.competitorsFound')}
                             </span>
                         )}
                         <span className="text-[10px] text-text-muted">
-                            {r.mentionedDomains.length} domain{r.mentionedDomains.length !== 1 ? 's' : ''} found
+                            {r.mentionedDomains.length} {t('presence.domainsFound')}
                         </span>
                     </div>
                 </div>
@@ -571,16 +571,16 @@ function PromptResult({ result: r, index }) {
                 <div className="px-3 pb-3 space-y-3 border-t border-border/50 pt-3">
                     {/* AI Response */}
                     <div>
-                        <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-1">AI Response</p>
+                        <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-1">{t('presence.aiResponse')}</p>
                         <p className="text-xs text-text-secondary leading-relaxed bg-white rounded-lg p-3 max-h-40 overflow-y-auto">
-                            {r.response || 'No response captured'}
+                            {r.response || t('presence.noResponse')}
                         </p>
                     </div>
 
                     {/* Mentioned domains */}
                     {r.mentionedDomains.length > 0 && (
                         <div>
-                            <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-1">Cited Domains</p>
+                            <p className="text-[10px] font-medium text-text-muted uppercase tracking-wider mb-1">{t('presence.citedDomains')}</p>
                             <div className="flex flex-wrap gap-1">
                                 {r.mentionedDomains.map((d) => (
                                     <span key={d} className="text-[10px] font-medium bg-gray-100 text-text-secondary px-2 py-1 rounded-lg">
@@ -594,7 +594,7 @@ function PromptResult({ result: r, index }) {
                     {/* Tracked pages */}
                     {r.trackedPagesMentioned?.length > 0 && (
                         <div>
-                            <p className="text-[10px] font-medium text-green-600 uppercase tracking-wider mb-1">Your Pages Cited</p>
+                            <p className="text-[10px] font-medium text-green-600 uppercase tracking-wider mb-1">{t('presence.yourPagesCited')}</p>
                             <div className="flex flex-wrap gap-1">
                                 {r.trackedPagesMentioned.map((p) => (
                                     <span key={p} className="text-[10px] font-medium bg-green-100 text-green-700 px-2 py-1 rounded-lg">

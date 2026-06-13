@@ -11,6 +11,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import {
     collection, addDoc, getDocs, doc, getDoc, query, where, serverTimestamp,
 } from 'firebase/firestore';
@@ -19,12 +20,12 @@ import { authFetch } from '@/lib/apiClient';
 
 /* ==================== PAGE TYPE ICONS ==================== */
 const pageTypeConfig = {
-    guide: { icon: BookOpen, color: 'text-blue-600', label: 'Guide' },
-    comparison: { icon: Scale, color: 'text-purple-600', label: 'Comparison' },
-    definition: { icon: FileText, color: 'text-teal-600', label: 'Definition' },
-    faq: { icon: HelpCircle, color: 'text-amber-700', label: 'FAQ' },
-    'use-case': { icon: Target, color: 'text-green-600', label: 'Use Case' },
-    decision: { icon: Star, color: 'text-yellow-600', label: 'Decision' },
+    guide: { icon: BookOpen, color: 'text-blue-600', labelKey: 'clusters.typeGuide' },
+    comparison: { icon: Scale, color: 'text-purple-600', labelKey: 'clusters.typeComparison' },
+    definition: { icon: FileText, color: 'text-teal-600', labelKey: 'clusters.typeDefinition' },
+    faq: { icon: HelpCircle, color: 'text-amber-700', labelKey: 'clusters.typeFaq' },
+    'use-case': { icon: Target, color: 'text-green-600', labelKey: 'clusters.typeUseCase' },
+    decision: { icon: Star, color: 'text-yellow-600', labelKey: 'clusters.typeDecision' },
 };
 
 /* ==================== PRIORITY BADGE ==================== */
@@ -43,6 +44,7 @@ function PriorityBadge({ priority }) {
 
 /* ==================== CLUSTER CARD ==================== */
 function ClusterCard({ cluster, index }) {
+    const { t } = useI18n();
     const [expanded, setExpanded] = useState(false);
     const [showLinks, setShowLinks] = useState(false);
     const [showOrder, setShowOrder] = useState(false);
@@ -63,7 +65,7 @@ function ClusterCard({ cluster, index }) {
                                 <PriorityBadge priority={cluster.priority} />
                             </div>
                             <p className="text-sm text-text-muted mt-0.5">
-                                {1 + (cluster.supportingPages?.length || 0)} pages · Cluster #{index + 1}
+                                {1 + (cluster.supportingPages?.length || 0)} {t('clusters.pages')} · Cluster #{index + 1}
                             </p>
                         </div>
                     </div>
@@ -76,15 +78,15 @@ function ClusterCard({ cluster, index }) {
                 {/* Why this matters */}
                 <div className="mt-3 grid sm:grid-cols-3 gap-2">
                     <div className="p-2 bg-surface-secondary rounded-lg">
-                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">Strategy</p>
+                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">{t('clusters.strategy')}</p>
                         <p className="text-sm text-text-secondary mt-0.5">{cluster.reason}</p>
                     </div>
                     <div className="p-2 bg-surface-secondary rounded-lg">
-                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">AI Value</p>
+                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">{t('clusters.aiValue')}</p>
                         <p className="text-sm text-text-secondary mt-0.5">{cluster.aiValue}</p>
                     </div>
                     <div className="p-2 bg-surface-secondary rounded-lg">
-                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">Commercial</p>
+                        <p className="text-xs font-medium text-text-muted uppercase tracking-wider">{t('clusters.commercial')}</p>
                         <p className="text-sm text-text-secondary mt-0.5">{cluster.commercialRelevance || '—'}</p>
                     </div>
                 </div>
@@ -95,19 +97,19 @@ function ClusterCard({ cluster, index }) {
                 <div className="flex items-center gap-3">
                     <Crown className="w-4 h-4 text-brand shrink-0" />
                     <div className="flex-1">
-                        <p className="text-xs font-bold text-brand uppercase tracking-wider">Pillar Page</p>
+                        <p className="text-xs font-bold text-brand uppercase tracking-wider">{t('clusters.pillarPage')}</p>
                         <p className="text-base font-semibold text-text-primary">{cluster.pillarPage?.title}</p>
                         {cluster.pillarPage?.description && (
                             <p className="text-sm text-text-muted mt-0.5">{cluster.pillarPage.description}</p>
                         )}
                     </div>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border border-current/20 ${pillarType.color}`}>{pillarType.label}</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border border-current/20 ${pillarType.color}`}>{t(pillarType.labelKey)}</span>
                 </div>
             </div>
 
             {/* Supporting Pages (always visible) */}
             <div className="px-5 py-3">
-                <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Supporting Pages</p>
+                <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">{t('clusters.supportingPages')}</p>
                 <div className="space-y-1.5">
                     {(cluster.supportingPages || []).map((page, i) => {
                         const typeConfig = pageTypeConfig[page.type] || pageTypeConfig.guide;
@@ -124,7 +126,7 @@ function ClusterCard({ cluster, index }) {
                                         <p className="text-xs text-blue-500 mt-0.5">→ {page.role}</p>
                                     )}
                                 </div>
-                                <span className={`text-xs font-medium ${typeConfig.color}`}>{typeConfig.label}</span>
+                                <span className={`text-xs font-medium ${typeConfig.color}`}>{t(typeConfig.labelKey)}</span>
                             </div>
                         );
                     })}
@@ -140,8 +142,8 @@ function ClusterCard({ cluster, index }) {
                             <button onClick={() => setShowLinks(!showLinks)}
                                 className="flex items-center gap-2 text-sm font-medium text-text-primary cursor-pointer w-full">
                                 <Link2 className="w-4 h-4 text-blue-500" />
-                                Internal Linking Plan
-                                <span className="text-xs text-text-muted ml-auto">{cluster.internalLinkingPlan.length} rules</span>
+                                {t('clusters.internalLinking')}
+                                <span className="text-xs text-text-muted ml-auto">{cluster.internalLinkingPlan.length} {t('clusters.rules')}</span>
                             </button>
                             {showLinks && (
                                 <ul className="mt-2 space-y-1">
@@ -162,8 +164,8 @@ function ClusterCard({ cluster, index }) {
                             <button onClick={() => setShowOrder(!showOrder)}
                                 className="flex items-center gap-2 text-sm font-medium text-text-primary cursor-pointer w-full">
                                 <ListOrdered className="w-4 h-4 text-green-500" />
-                                Publishing Order
-                                <span className="text-xs text-text-muted ml-auto">{cluster.recommendedPublishingOrder.length} steps</span>
+                                {t('clusters.publishingOrder')}
+                                <span className="text-xs text-text-muted ml-auto">{cluster.recommendedPublishingOrder.length} {t('clusters.steps')}</span>
                             </button>
                             {showOrder && (
                                 <ol className="mt-2 space-y-1">
@@ -186,6 +188,7 @@ function ClusterCard({ cluster, index }) {
 /* ==================== MAIN PAGE ==================== */
 export default function ClustersPage() {
     const { user } = useAuth();
+    const { t } = useI18n();
 
     // Form
     const [domain, setDomain] = useState('');
@@ -328,14 +331,14 @@ export default function ClustersPage() {
                         <div className="dot" />
                         <div className="dot" />
                     </div>
-                    <h2 className="text-xl font-bold text-text-primary mb-1">Generating clusters</h2>
+                    <h2 className="text-xl font-bold text-text-primary mb-1">{t('clusters.generating')}</h2>
                     <p className="text-sm text-text-muted">
-                        {companyName || domain} · {themes.filter(Boolean).length} themes
+                        {companyName || domain} · {themes.filter(Boolean).length} {t('clusters.themesCount')}
                     </p>
                 </div>
                 <div className="progress-bar-indeterminate rounded-full" />
                 <div className="flex items-center justify-center gap-2 text-text-muted">
-                    <span className="text-sm">Building pillar pages and linking plans</span>
+                    <span className="text-sm">{t('clusters.building')}</span>
                     <span className="typing-cursor" />
                 </div>
             </div>
@@ -349,14 +352,14 @@ export default function ClustersPage() {
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-text-primary">Content Clusters</h1>
+                        <h1 className="text-2xl font-bold text-text-primary">{t('clusters.title')}</h1>
                         <p className="text-sm text-text-secondary mt-1">
-                            {result.companyName || result.website} · {result.clusterCount} cluster{result.clusterCount > 1 ? 's' : ''} · {result.totalPages} pages
+                            {result.companyName || result.website} · {result.clusterCount} cluster{result.clusterCount > 1 ? 's' : ''} · {result.totalPages} {t('clusters.pages')}
                         </p>
                     </div>
                     <Button variant="secondary" size="sm" icon={RefreshCw}
                         onClick={() => setResult(null)}>
-                        New Generation
+                        {t('clusters.newGeneration')}
                     </Button>
                 </div>
 
@@ -365,19 +368,19 @@ export default function ClustersPage() {
                     <Card hover={false} padding="p-4">
                         <Layers className="w-4 h-4 text-brand mb-2" />
                         <div className="text-2xl font-bold text-text-primary">{result.clusterCount}</div>
-                        <div className="text-xs text-text-muted">Clusters</div>
+                        <div className="text-xs text-text-muted">{t('clusters.clusters')}</div>
                     </Card>
                     <Card hover={false} padding="p-4">
                         <FileText className="w-4 h-4 text-blue-500 mb-2" />
                         <div className="text-2xl font-bold text-text-primary">{result.totalPages}</div>
-                        <div className="text-xs text-text-muted">Total Pages</div>
+                        <div className="text-xs text-text-muted">{t('clusters.totalPages')}</div>
                     </Card>
                     <Card hover={false} padding="p-4">
                         <Zap className="w-4 h-4 text-green-500 mb-2" />
                         <div className="text-2xl font-bold text-text-primary">
                             {result.clusters?.filter(c => c.priority === 'high').length || 0}
                         </div>
-                        <div className="text-xs text-text-muted">High Priority</div>
+                        <div className="text-xs text-text-muted">{t('clusters.highPriority')}</div>
                     </Card>
                 </div>
 
@@ -395,9 +398,9 @@ export default function ClustersPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-text-primary">Content Clusters</h1>
+                <h1 className="text-2xl font-bold text-text-primary">{t('clusters.title')}</h1>
                 <p className="text-sm text-text-secondary mt-1">
-                    Generate strategic topic clusters to boost your brand&apos;s AI answer visibility.
+                    {t('clusters.subtitle')}
                 </p>
             </div>
 
@@ -405,26 +408,26 @@ export default function ClustersPage() {
                 {/* Left — Brand + Themes */}
                 <div className="space-y-6">
                     <Card hover={false} padding="p-5">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Brand Info</h3>
+                        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('clusters.brandInfo')}</h3>
                         <div className="space-y-3">
-                            <Input label="Domain" placeholder="prophot.com" icon={Globe}
+                            <Input label={t('clusters.domain')} placeholder="prophot.com" icon={Globe}
                                 value={domain} onChange={e => setDomain(e.target.value)} />
-                            <Input label="Company" placeholder="ProPhot"
+                            <Input label={t('clusters.company')} placeholder="ProPhot"
                                 value={companyName} onChange={e => setCompanyName(e.target.value)} />
-                            <Input label="Industry" placeholder="Photography"
+                            <Input label={t('clusters.industry')} placeholder="Photography"
                                 value={industry} onChange={e => setIndustry(e.target.value)} />
                         </div>
                     </Card>
 
                     <Card hover={false} padding="p-5">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-semibold text-text-primary">Strategic Themes</h3>
+                            <h3 className="text-sm font-semibold text-text-primary">{t('clusters.strategicThemes')}</h3>
                             <button onClick={() => addField(setThemes, themes)}
                                 className="text-xs text-brand font-medium flex items-center gap-1 cursor-pointer">
-                                <Plus className="w-3 h-3" /> Add
+                                <Plus className="w-3 h-3" /> {t('clusters.add')}
                             </button>
                         </div>
-                        <p className="text-xs text-text-muted mb-3">Topics to build clusters around</p>
+                        <p className="text-xs text-text-muted mb-3">{t('clusters.themesHint')}</p>
                         <div className="space-y-2">
                             {themes.map((t, i) => (
                                 <div key={i} className="flex gap-2">
@@ -447,13 +450,13 @@ export default function ClustersPage() {
                 <div className="space-y-6">
                     <Card hover={false} padding="p-5">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-semibold text-text-primary">Tracked Prompts</h3>
+                            <h3 className="text-sm font-semibold text-text-primary">{t('clusters.trackedPrompts')}</h3>
                             <button onClick={() => addField(setTrackedPrompts, trackedPrompts)}
                                 className="text-xs text-brand font-medium flex items-center gap-1 cursor-pointer">
-                                <Plus className="w-3 h-3" /> Add
+                                <Plus className="w-3 h-3" /> {t('clusters.add')}
                             </button>
                         </div>
-                        <p className="text-xs text-text-muted mb-3">AI queries to target</p>
+                        <p className="text-xs text-text-muted mb-3">{t('clusters.promptsHint')}</p>
                         <div className="space-y-2">
                             {trackedPrompts.map((p, i) => (
                                 <div key={i} className="flex gap-2">
@@ -474,7 +477,7 @@ export default function ClustersPage() {
                     <Button size="lg" icon={Sparkles} onClick={generate}
                         disabled={!domain && themes.filter(Boolean).length === 0}
                         className="w-full shadow-[0_4px_16px_rgba(249,115,22,0.3)]">
-                        Generate Clusters ({themes.filter(Boolean).length} themes)
+                        {t('clusters.generate')} ({themes.filter(Boolean).length} {t('clusters.themesCount')})
                     </Button>
 
                     {error && (
@@ -484,7 +487,7 @@ export default function ClustersPage() {
                     {/* History */}
                     {history.length > 0 && (
                         <Card hover={false} padding="p-5">
-                            <h3 className="text-base font-semibold text-text-primary mb-3">Recent Generations</h3>
+                            <h3 className="text-base font-semibold text-text-primary mb-3">{t('clusters.recentGenerations')}</h3>
                             <div className="space-y-2">
                                 {history.map((item) => (
                                     <div key={item.id}
@@ -495,7 +498,7 @@ export default function ClustersPage() {
                                             <div>
                                                 <p className="text-sm font-medium text-text-primary">{item.companyName || item.domain}</p>
                                                 <p className="text-xs text-text-muted">
-                                                    {item.clusterCount} cluster{item.clusterCount > 1 ? 's' : ''} · {item.totalPages} pages
+                                                    {item.clusterCount} cluster{item.clusterCount > 1 ? 's' : ''} · {item.totalPages} {t('clusters.pages')}
                                                 </p>
                                             </div>
                                         </div>
