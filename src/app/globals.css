@@ -1,30 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+/* ============================================================
+   Searchora design system 2026 — tokens (source of truth: CLAUDE.md)
+   Legacy token names (brand, text-*, surface-*) are remapped onto
+   the new palette so every page adopts it without per-file edits.
+   ============================================================ */
 @theme {
-  --color-brand: #e07832;
-  --color-brand-hover: #c96a2a;
-  --color-brand-light: #faf6f2;
-  --color-brand-50: #faf6f2;
-  --color-brand-100: #f2e8dd;
-  --color-brand-200: #e8d4bd;
-  --color-brand-500: #e07832;
-  --color-brand-600: #c96a2a;
-  --color-brand-700: #a85520;
-  --color-dark: #111111;
-  --color-dark-secondary: #333333;
-  --color-text-primary: #1c1c1e;
-  --color-text-secondary: #555e68;
-  --color-text-muted: #8e99a4;
-  --color-border: #e8eaed;
-  --color-border-light: #f2f3f5;
+  /* Palette */
+  --color-ink: #0E1726;
+  --color-ink-soft: #51617A;
+  --color-paper: #F5F9FE;
+  --color-paper-2: #E9F1FA;
+  --color-line: #D8E4F2;
+  --color-blue: #2E8BFF;
+  --color-blue-deep: #1568DF;
+  --color-mark: #BDE2FF;
+  --color-mark-soft: #E3F1FF;
+  --color-ok: #1E9E6A;
+
+  /* Legacy aliases */
+  --color-brand: #2E8BFF;
+  --color-brand-hover: #1568DF;
+  --color-brand-light: #E3F1FF;
+  --color-brand-50: #E3F1FF;
+  --color-brand-100: #BDE2FF;
+  --color-brand-200: #C9E2FB;
+  --color-brand-500: #2E8BFF;
+  --color-brand-600: #1568DF;
+  --color-brand-700: #1568DF;
+  --color-dark: #0C1A2E;
+  --color-dark-secondary: #0E1726;
+  --color-text-primary: #0E1726;
+  --color-text-secondary: #51617A;
+  --color-text-muted: #51617A;
+  --color-border: #D8E4F2;
+  --color-border-light: #E9F1FA;
   --color-surface: #ffffff;
-  --color-surface-secondary: #f7f8f9;
-  --color-surface-tertiary: #f0f1f3;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-surface-secondary: #E9F1FA;
+  --color-surface-tertiary: #D8E4F2;
+
+  /* Typography */
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Bricolage Grotesque', var(--font-sans);
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Radius: 14px (cards) or 999px (pills). Nothing else. */
+  --radius-sm: 14px;
+  --radius-md: 14px;
+  --radius-lg: 14px;
+  --radius-xl: 14px;
+  --radius-2xl: 14px;
+  --radius-3xl: 14px;
+
+  /* Motion */
+  --ease: cubic-bezier(.2, .8, .2, 1);
 }
 
-/* Base styles */
+/* ==================== BASE ==================== */
 html {
   scroll-behavior: smooth;
 }
@@ -32,19 +65,34 @@ html {
 body {
   font-family: var(--font-sans);
   font-size: 15px;
-  color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  color: var(--color-ink);
+  background-color: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Selection color */
-::selection {
-  background-color: var(--color-brand-100);
-  color: var(--color-brand-700);
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-/* Scrollbar styling */
+h1 {
+  font-size: clamp(40px, 5.2vw, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: clamp(30px, 3.6vw, 44px);
+  line-height: 1.1;
+}
+
+::selection {
+  background-color: var(--color-mark);
+  color: var(--color-ink);
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -54,244 +102,220 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--color-line);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--color-ink-soft);
 }
 
-/* ==================== ANIMATIONS ==================== */
+/* Focus: every interactive element */
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 3px;
+}
 
-/* Base motions */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* ==================== SIGNATURE PIECES ==================== */
+
+/* Eyebrow: mono uppercase + 22px dash */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--color-blue);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 22px;
+  height: 1.5px;
+  background: var(--color-blue);
+  flex-shrink: 0;
+}
+
+/* Signature highlighter: --mark behind ONE h1 keyword, skewed, scaleX in */
+.mk {
+  position: relative;
+  display: inline-block;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+.mk::before {
+  content: '';
+  position: absolute;
+  inset: 6% -0.12em;
+  background: var(--color-mark);
+  transform: skew(-4deg) scaleX(0);
+  transform-origin: left center;
+  z-index: -1;
+  animation: mk-in .7s var(--ease) .8s forwards;
+}
+
+@keyframes mk-in {
+  to {
+    transform: skew(-4deg) scaleX(1);
   }
+}
 
+/* Chip: mono pill */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .04em;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink-soft);
+}
+
+.chip-active {
+  border-color: var(--color-blue);
+  background: var(--color-mark-soft);
+  color: var(--color-blue);
+}
+
+/* Icon tile: 46x46, radius 12px is the card-radius family — use 14px per system */
+.icon-tile {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-mark-soft);
+  border: 1px solid #C9E2FB;
+  color: var(--color-blue);
+  transition: background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
+}
+
+.group:hover .icon-tile {
+  background: var(--color-blue);
+  border-color: var(--color-blue);
+  color: #fff;
+}
+
+/* Dark CTA section: #0C1A2E + radial blue halo */
+.cta-dark {
+  position: relative;
+  background-color: #0C1A2E;
+  color: #fff;
+  overflow: hidden;
+}
+
+.cta-dark::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 120%;
+  background: radial-gradient(closest-side, rgba(46, 139, 255, .5), transparent);
+  pointer-events: none;
+}
+
+.cta-dark > * {
+  position: relative;
+}
+
+/* ==================== MOTION ==================== */
+
+/* Page-load cascade: nav → eyebrow → h1 → paragraph → CTA → proof.
+   150ms start, +120ms per element. One orchestrated sequence per page. */
+.cascade > * {
+  opacity: 0;
+  transform: translateY(22px);
+  animation: cascade-in .6s var(--ease) forwards;
+}
+
+.cascade > *:nth-child(1) { animation-delay: 150ms; }
+.cascade > *:nth-child(2) { animation-delay: 270ms; }
+.cascade > *:nth-child(3) { animation-delay: 390ms; }
+.cascade > *:nth-child(4) { animation-delay: 510ms; }
+.cascade > *:nth-child(5) { animation-delay: 630ms; }
+.cascade > *:nth-child(6) { animation-delay: 750ms; }
+
+@keyframes cascade-in {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+/* Visual panels: scale(.97)→1 + fade, 450ms delay */
+.panel-in {
+  opacity: 0;
+  transform: scale(.97);
+  animation: panel-in .7s var(--ease) 450ms forwards;
 }
 
-@keyframes fade-in-down {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
+@keyframes panel-in {
   to {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-@keyframes pulse-soft {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.6;
-  }
+/* Legacy keyframes kept for the dashboard */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Pro loading — orbit dots */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes orbit {
-  0% {
-    transform: rotate(0deg) translateX(16px) rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg) translateX(16px) rotate(-360deg);
-  }
+  0% { transform: rotate(0deg) translateX(16px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(16px) rotate(-360deg); }
 }
 
-/* Shimmer skeleton effect */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* Progress bar grow */
 @keyframes progress-indeterminate {
-  0% {
-    left: -40%;
-    width: 40%;
-  }
-
-  50% {
-    left: 20%;
-    width: 60%;
-  }
-
-  100% {
-    left: 100%;
-    width: 40%;
-  }
+  0% { left: -40%; width: 40%; }
+  50% { left: 20%; width: 60%; }
+  100% { left: 100%; width: 40%; }
 }
 
-/* Typewriter cursor blink */
 @keyframes blink {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-/* Smooth counter */
-@keyframes count-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Stagger entrance for children */
 @keyframes stagger-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ==================== ANIMATION CLASSES ==================== */
 .animate-fade-in-up {
-  animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fade-in-up .5s var(--ease) forwards;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.4s ease-out forwards;
+  animation: fade-in .4s var(--ease) forwards;
 }
 
-.animate-fade-in-down {
-  animation: fade-in-down 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+.stagger > *:nth-child(1) { animation: stagger-in .4s var(--ease) 0s both; }
+.stagger > *:nth-child(2) { animation: stagger-in .4s var(--ease) .09s both; }
+.stagger > *:nth-child(3) { animation: stagger-in .4s var(--ease) .18s both; }
+.stagger > *:nth-child(4) { animation: stagger-in .4s var(--ease) .27s both; }
+.stagger > *:nth-child(5) { animation: stagger-in .4s var(--ease) .36s both; }
+.stagger > *:nth-child(6) { animation: stagger-in .4s var(--ease) .45s both; }
+.stagger > *:nth-child(7) { animation: stagger-in .4s var(--ease) .54s both; }
+.stagger > *:nth-child(8) { animation: stagger-in .4s var(--ease) .63s both; }
 
-.animate-slide-in-right {
-  animation: slide-in-right 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.animate-scale-in {
-  animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-/* Stagger delays for children */
-.stagger>*:nth-child(1) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.0s both;
-}
-
-.stagger>*:nth-child(2) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
-}
-
-.stagger>*:nth-child(3) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
-}
-
-.stagger>*:nth-child(4) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
-}
-
-.stagger>*:nth-child(5) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.24s both;
-}
-
-.stagger>*:nth-child(6) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.30s both;
-}
-
-.stagger>*:nth-child(7) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.36s both;
-}
-
-.stagger>*:nth-child(8) {
-  animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.42s both;
-}
-
-/* Shimmer skeleton */
-.shimmer {
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-
-/* Orbit loader */
 .orbit-loader {
   position: relative;
   width: 40px;
@@ -306,26 +330,18 @@ body {
   height: 6px;
   margin: -3px;
   border-radius: 50%;
-  background: var(--color-brand);
+  background: var(--color-blue);
   animation: orbit 1.4s linear infinite;
 }
 
-.orbit-loader .dot:nth-child(2) {
-  animation-delay: -0.47s;
-  opacity: 0.7;
-}
+.orbit-loader .dot:nth-child(2) { animation-delay: -0.47s; opacity: 0.7; }
+.orbit-loader .dot:nth-child(3) { animation-delay: -0.93s; opacity: 0.4; }
 
-.orbit-loader .dot:nth-child(3) {
-  animation-delay: -0.93s;
-  opacity: 0.4;
-}
-
-/* Indeterminate progress bar */
 .progress-bar-indeterminate {
   position: relative;
   overflow: hidden;
   height: 3px;
-  background: #f3f4f6;
+  background: var(--color-paper-2);
   border-radius: 3px;
 }
 
@@ -334,20 +350,46 @@ body {
   position: absolute;
   top: 0;
   height: 100%;
-  background: var(--color-brand);
+  background: var(--color-blue);
   border-radius: 3px;
   animation: progress-indeterminate 1.8s ease-in-out infinite;
 }
 
-/* Typing cursor */
 .typing-cursor::after {
-  content: '▌';
-  animation: blink 0.8s step-end infinite;
-  color: var(--color-brand);
-  font-weight: 300;
+  content: '';
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  vertical-align: text-bottom;
+  background: var(--color-blue);
+  animation: blink .8s step-end infinite;
 }
 
-/* ==================== UTILITY CLASSES ==================== */
+/* ==================== REDUCED MOTION ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .cascade > *,
+  .panel-in {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  .mk::before {
+    transform: skew(-4deg) scaleX(1);
+    animation: none !important;
+  }
+}
+
+/* ==================== LAYOUT UTILITIES ==================== */
 .text-balance {
   text-wrap: balance;
 }
@@ -357,33 +399,23 @@ body {
 }
 
 .container-narrow {
-  @apply max-w-5xl mx-auto;
+  max-width: 960px;
+  margin-inline: auto;
 }
 
 .container-wide {
-  @apply max-w-7xl mx-auto;
+  max-width: 1180px;
+  margin-inline: auto;
 }
 
-/* Smooth transitions on all interactive elements */
 button,
 a,
 input,
 select,
 textarea {
-  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all .2s var(--ease);
 }
 
-/* Card hover lift */
-.card-hover {
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-}
-
-/* Hide scrollbar for nav pills */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

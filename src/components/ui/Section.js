@@ -2,9 +2,7 @@
 
 export function SectionLabel({ children, className = '' }) {
     return (
-        <span
-            className={`inline-block text-xs font-semibold uppercase tracking-widest text-brand ${className}`}
-        >
+        <span className={`eyebrow ${className}`}>
             {children}
         </span>
     );
@@ -12,9 +10,7 @@ export function SectionLabel({ children, className = '' }) {
 
 export function SectionTitle({ children, className = '' }) {
     return (
-        <h2
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary leading-tight tracking-tight ${className}`}
-        >
+        <h2 className={`text-text-primary ${className}`}>
             {children}
         </h2>
     );
@@ -32,9 +28,9 @@ export function SectionDescription({ children, className = '' }) {
 
 export function Section({ children, className = '', id, background = 'white' }) {
     const bgClasses = {
-        white: 'bg-white',
-        gray: 'bg-surface-secondary',
-        dark: 'bg-dark text-white',
+        white: 'bg-paper',
+        gray: 'bg-paper-2',
+        dark: 'cta-dark',
     };
 
     return (

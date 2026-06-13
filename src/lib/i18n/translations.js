@@ -567,7 +567,7 @@ const translations = {
             careers: 'Careers',
             privacy: 'Privacy Policy',
             terms: 'Terms of Service',
-            copyright: '© 2025 Searchora. All rights reserved.',
+            copyright: '© 2026 Searchora. All rights reserved.',
         },
 
         // ==================== COMMON ====================
@@ -1131,7 +1131,7 @@ const translations = {
             careers: 'Carrières',
             privacy: 'Politique de confidentialité',
             terms: 'Conditions d\'utilisation',
-            copyright: '© 2025 Searchora. Tous droits réservés.',
+            copyright: '© 2026 Searchora. Tous droits réservés.',
         },
         common: {
             learnMore: 'En savoir plus',
@@ -1693,7 +1693,7 @@ const translations = {
             careers: 'Carreras',
             privacy: 'Política de privacidad',
             terms: 'Términos de servicio',
-            copyright: '© 2025 Searchora. Todos los derechos reservados.',
+            copyright: '© 2026 Searchora. Todos los derechos reservados.',
         },
         common: {
             learnMore: 'Saber más',

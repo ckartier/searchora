@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ArrowUpRight } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 
 export default function Footer() {
@@ -21,29 +20,24 @@ export default function Footer() {
             { label: t('nav.caseStudies'), href: '/case-studies' },
         ],
         [t('footer.company')]: [
-            { label: t('footer.about'), href: '#' },
-            { label: t('footer.blog'), href: '#' },
-            { label: t('footer.careers'), href: '#' },
             { label: t('nav.contact'), href: '/contact' },
-        ],
-        [t('footer.legal')]: [
-            { label: t('footer.privacy'), href: '#' },
-            { label: t('footer.terms'), href: '#' },
+            { label: t('demo.badge'), href: '/demo' },
+            { label: t('nav.login'), href: '/login' },
         ],
     };
 
     return (
-        <footer className="bg-dark text-white">
+        <footer className="cta-dark">
             <div className="container-wide section-padding">
                 {/* Top section */}
-                <div className="py-16 lg:py-20 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 lg:gap-8">
+                <div className="py-16 lg:py-20 grid grid-cols-2 md:grid-cols-3 gap-10 lg:gap-8">
                     {/* Brand column */}
-                    <div className="col-span-2 md:col-span-3 lg:col-span-1 mb-4 lg:mb-0">
+                    <div className="col-span-2 md:col-span-1 mb-4 lg:mb-0">
                         <Link href="/" className="inline-flex items-center gap-2 mb-4">
                             <Image src="/logo.png" alt="Searchora" width={28} height={32} className="invert" />
-                            <span className="text-lg font-bold tracking-tight">Searchora</span>
+                            <span className="text-lg font-bold tracking-tight [font-family:var(--font-display)]">Searchora</span>
                         </Link>
-                        <p className="text-sm text-gray-400 leading-relaxed max-w-xs mt-3">
+                        <p className="text-sm text-white/60 leading-relaxed max-w-xs mt-3">
                             {t('footer.description')}
                         </p>
                     </div>
@@ -51,18 +45,15 @@ export default function Footer() {
                     {/* Link columns */}
                     {Object.entries(footerLinks).map(([category, links]) => (
                         <div key={category}>
-                            <h4 className="text-sm font-semibold text-white mb-4">{category}</h4>
+                            <h4 className="[font-family:var(--font-mono)] text-[12px] uppercase tracking-[.12em] text-white/50 mb-4 font-normal">{category}</h4>
                             <ul className="space-y-2.5">
                                 {links.map((link) => (
                                     <li key={link.label}>
                                         <Link
                                             href={link.href}
-                                            className="text-sm text-gray-400 hover:text-white transition-colors duration-200 inline-flex items-center gap-1 group"
+                                            className="text-sm text-white/60 hover:text-white"
                                         >
                                             {link.label}
-                                            {link.href === '#' && (
-                                                <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                            )}
                                         </Link>
                                     </li>
                                 ))}
@@ -72,14 +63,10 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom bar */}
-                <div className="py-6 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-xs text-gray-500">
+                <div className="py-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="[font-family:var(--font-mono)] text-[11px] tracking-[.1em] uppercase text-white/40">
                         {t('footer.copyright')}
                     </p>
-                    <div className="flex items-center gap-6">
-                        <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Twitter</a>
-                        <a href="#" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">LinkedIn</a>
-                    </div>
                 </div>
             </div>
         </footer>

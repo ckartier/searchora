@@ -4,15 +4,15 @@ import { forwardRef } from 'react';
 
 const variants = {
     primary:
-        'bg-brand text-white hover:bg-brand-hover shadow-[0_2px_8px_rgba(249,115,22,0.25)] hover:shadow-[0_4px_16px_rgba(249,115,22,0.35)]',
+        'bg-blue text-white shadow-[0_10px_24px_-8px_rgba(46,139,255,0.55)] hover:bg-blue-deep hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-8px_rgba(46,139,255,0.65)]',
     secondary:
-        'bg-white text-text-primary border border-border hover:border-brand hover:text-brand shadow-sm hover:shadow-md',
+        'bg-white text-text-primary border border-line hover:border-blue hover:text-blue hover:-translate-y-0.5',
     ghost:
-        'bg-transparent text-text-secondary hover:text-text-primary hover:bg-surface-secondary',
+        'bg-transparent text-text-secondary hover:text-text-primary hover:bg-paper-2',
     outline:
-        'bg-transparent text-brand border border-brand hover:bg-brand hover:text-white',
+        'bg-transparent text-blue border border-blue hover:bg-blue hover:text-white hover:-translate-y-0.5',
     dark:
-        'bg-dark text-white hover:bg-dark-secondary shadow-sm',
+        'bg-dark text-white hover:bg-dark-secondary',
 };
 
 const sizes = {
@@ -41,10 +41,8 @@ const Button = forwardRef(function Button(
             ref={ref}
             disabled={disabled || loading}
             className={`
-        inline-flex items-center justify-center gap-2 
-        font-medium rounded-xl 
-        transition-all duration-200 ease-out
-        focus:outline-none focus:ring-2 focus:ring-brand/30 focus:ring-offset-2
+        inline-flex items-center justify-center gap-2
+        font-medium rounded-full
         disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none
         cursor-pointer
         ${variants[variant]}
@@ -59,10 +57,10 @@ const Button = forwardRef(function Button(
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
             ) : Icon && iconPosition === 'left' ? (
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" strokeWidth={1.6} />
             ) : null}
             {children}
-            {!loading && Icon && iconPosition === 'right' ? <Icon className="w-4 h-4" /> : null}
+            {!loading && Icon && iconPosition === 'right' ? <Icon className="w-4 h-4" strokeWidth={1.6} /> : null}
         </button>
     );
 });

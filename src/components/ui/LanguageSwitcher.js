@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useI18n } from '@/lib/i18n';
-import { Globe } from 'lucide-react';
+import { Globe, Check } from 'lucide-react';
 
 export default function LanguageSwitcher({ variant = 'default' }) {
     const { lang, switchLanguage, languages } = useI18n();
@@ -21,32 +21,30 @@ export default function LanguageSwitcher({ variant = 'default' }) {
 
     const baseClasses =
         variant === 'compact'
-            ? 'flex items-center gap-1 text-xs font-medium px-2 py-1.5 rounded-lg border border-border hover:bg-surface-secondary transition-colors cursor-pointer'
-            : 'flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl border border-border hover:bg-surface-secondary transition-colors cursor-pointer';
+            ? 'chip cursor-pointer hover:border-blue'
+            : 'chip cursor-pointer hover:border-blue text-sm';
 
     return (
         <div ref={ref} className="relative">
             <button onClick={() => setOpen(!open)} className={baseClasses} aria-label="Change language">
-                <Globe className={variant === 'compact' ? 'w-3 h-3 text-text-muted' : 'w-3.5 h-3.5 text-text-muted'} />
-                <span>{current.flag}</span>
-                <span className="text-text-secondary">{current.label}</span>
+                <Globe className="w-3.5 h-3.5" strokeWidth={1.6} />
+                <span>{current.label}</span>
             </button>
 
             {open && (
-                <div className="absolute right-0 top-full mt-1 bg-white border border-border rounded-xl shadow-lg overflow-hidden z-50 min-w-[140px]">
+                <div className="absolute right-0 top-full mt-2 bg-white border border-line rounded-[14px] shadow-[0_20px_40px_-22px_rgba(21,104,223,0.35)] overflow-hidden z-50 min-w-[150px]">
                     {languages.map((l) => (
                         <button
                             key={l.code}
                             onClick={() => { switchLanguage(l.code); setOpen(false); }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors cursor-pointer ${l.code === lang
-                                    ? 'bg-brand-50 text-brand font-medium'
-                                    : 'text-text-secondary hover:bg-surface-secondary'
+                            className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm cursor-pointer ${l.code === lang
+                                ? 'bg-mark-soft text-blue font-medium'
+                                : 'text-text-secondary hover:bg-paper-2'
                                 }`}
                         >
-                            <span>{l.flag}</span>
                             <span>{l.name}</span>
                             {l.code === lang && (
-                                <span className="ml-auto text-brand">✓</span>
+                                <Check className="ml-auto w-3.5 h-3.5 text-blue" strokeWidth={2.4} />
                             )}
                         </button>
                     ))}

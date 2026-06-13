@@ -6,9 +6,9 @@ import translations from './translations';
 const I18nContext = createContext({});
 
 const SUPPORTED_LANGUAGES = [
-    { code: 'en', label: 'EN', name: 'English', flag: '🇬🇧' },
-    { code: 'fr', label: 'FR', name: 'Français', flag: '🇫🇷' },
-    { code: 'es', label: 'ES', name: 'Español', flag: '🇪🇸' },
+    { code: 'en', label: 'EN', name: 'English' },
+    { code: 'fr', label: 'FR', name: 'Français' },
+    { code: 'es', label: 'ES', name: 'Español' },
 ];
 
 export function I18nProvider({ children }) {
