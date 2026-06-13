@@ -27,6 +27,8 @@ import {
     ArrowUpRight,
     Clock,
     MapPin,
+    Download,
+    Package,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -76,6 +78,8 @@ export default function AuditPage() {
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
     const [progress, setProgress] = useState([]);
+    const [packLoading, setPackLoading] = useState(false);
+    const [packError, setPackError] = useState(null);
     const [form, setForm] = useState({
         websiteUrl: '',
         companyName: '',
@@ -170,6 +174,37 @@ export default function AuditPage() {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    /* ==================== DOWNLOAD GEO PACK ==================== */
+    const downloadPack = async () => {
+        if (!result) return;
+        setPackLoading(true);
+        setPackError(null);
+        try {
+            const resp = await authFetch('/api/geo-pack', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ audit: result }),
+            });
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.error || 'Pack failed');
+            }
+            const blob = await resp.blob();
+            const slug = (result.companyName || 'searchora')
+                .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'searchora';
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${slug}-geo-pack.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            setPackError(err.message);
+        } finally {
+            setPackLoading(false);
         }
     };
 
@@ -269,6 +304,30 @@ export default function AuditPage() {
                         {crawl.pagesCrawled || 0} {t('audit.pagesAnalyzed')} · {audit.companyName || audit.website}
                     </p>
                 </div>
+
+                {/* ---- DOWNLOAD GEO PACK ---- */}
+                <Card hover={false} padding="p-5" className="border-blue/40 bg-mark-soft/40">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="icon-tile shrink-0">
+                            <Package className="w-[22px] h-[22px]" strokeWidth={1.6} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-semibold text-text-primary">{t('audit.downloadPack')}</h3>
+                            <p className="text-xs text-text-secondary mt-0.5">{t('audit.packReady')}</p>
+                            {packError && (
+                                <p className="text-xs text-red-500 mt-1">{t('audit.packError')}</p>
+                            )}
+                        </div>
+                        <Button
+                            icon={Download}
+                            onClick={downloadPack}
+                            loading={packLoading}
+                            className="shrink-0"
+                        >
+                            {packLoading ? t('audit.generatingPack') : t('audit.downloadPack')}
+                        </Button>
+                    </div>
+                </Card>
 
                 {/* ---- SCORE + SUB-SCORES ---- */}
                 <div className="grid lg:grid-cols-5 gap-6">
