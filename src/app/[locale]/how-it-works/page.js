@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ui/LocaleLink';
 import { ArrowRight, Search, BarChart3, FileText, Target, Eye, CheckCircle2, Zap, TrendingUp, Database } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';

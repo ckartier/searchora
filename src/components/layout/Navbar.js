@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/ui/LocaleLink';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { useI18n } from '@/lib/i18n';
+import { parseLocale } from '@/lib/i18n/routing';
 
 const navLinks = [
     { key: 'howItWorks', href: '/how-it-works' },
@@ -24,6 +25,9 @@ export default function Navbar() {
 
     const isDashboard = pathname?.startsWith('/dashboard');
     if (isDashboard) return null;
+
+    // Chemin sans préfixe de langue, pour comparer l'état actif (/fr/pricing -> /pricing).
+    const barePath = parseLocale(pathname || '/').pathname;
 
     return (
         <>
@@ -44,7 +48,7 @@ export default function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className={`px-4 py-2 text-sm font-medium rounded-full ${pathname === link.href
+                                    className={`px-4 py-2 text-sm font-medium rounded-full ${barePath === link.href
                                         ? 'text-blue bg-mark-soft'
                                         : 'text-text-secondary hover:text-text-primary hover:bg-paper-2'
                                         }`}
@@ -93,7 +97,7 @@ export default function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     onClick={() => setIsOpen(false)}
-                                    className={`block px-4 py-3 text-sm font-medium rounded-[14px] ${pathname === link.href
+                                    className={`block px-4 py-3 text-sm font-medium rounded-[14px] ${barePath === link.href
                                         ? 'text-blue bg-mark-soft'
                                         : 'text-text-secondary hover:text-text-primary hover:bg-paper-2'
                                         }`}

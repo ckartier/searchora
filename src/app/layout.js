@@ -1,8 +1,10 @@
 import './globals.css';
+import { headers, cookies } from 'next/headers';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
+import { LOCALES, DEFAULT_LOCALE } from '@/lib/i18n/routing';
 
 export const metadata = {
   title: 'Searchora — Make Your Brand Appear in AI Answers',
@@ -18,11 +20,22 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+async function resolveLocale() {
+  // 1. Locale exposée par le middleware (dérivée de l'URL pour les pages publiques).
+  const headerLocale = (await headers()).get('x-searchora-locale');
+  if (headerLocale && LOCALES.includes(headerLocale)) return headerLocale;
+  // 2. Sinon (ex. dashboard), préférence mémorisée via cookie.
+  const cookieLocale = (await cookies()).get('searchora-lang')?.value;
+  if (cookieLocale && LOCALES.includes(cookieLocale)) return cookieLocale;
+  return DEFAULT_LOCALE;
+}
+
+export default async function RootLayout({ children }) {
+  const locale = await resolveLocale();
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang={locale} data-scroll-behavior="smooth">
       <body className="antialiased">
-        <I18nProvider>
+        <I18nProvider initialLang={locale}>
           <AuthProvider>
             <Navbar />
             <main className="min-h-screen">{children}</main>

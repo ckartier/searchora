@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ui/LocaleLink';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
