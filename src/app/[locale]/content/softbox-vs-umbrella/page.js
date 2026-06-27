@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ui/LocaleLink';
 import { ArrowRight, CheckCircle2, XCircle, HelpCircle, Lightbulb, Camera, Sun, Target, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import Button from '@/components/ui/Button';

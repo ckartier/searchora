@@ -11,23 +11,21 @@ const SUPPORTED_LANGUAGES = [
     { code: 'es', label: 'ES', name: 'Español' },
 ];
 
-export function I18nProvider({ children }) {
-    const [lang, setLang] = useState('en');
+export function I18nProvider({ children, initialLang }) {
+    // La locale est déterminée côté serveur (URL → header, voir middleware.js)
+    // et fournie via `initialLang` pour un rendu/SSR cohérent avec l'URL.
+    const [lang, setLang] = useState(
+        initialLang && translations[initialLang] ? initialLang : 'en'
+    );
 
-    // Persist language choice, falling back to the browser language on first visit
+    // Si la route fournit une nouvelle locale (navigation entre langues), on s'aligne.
     useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const saved = localStorage.getItem('searchora-lang');
-        const detected = (navigator.language || '').slice(0, 2).toLowerCase();
-        const initial = (saved && translations[saved] && saved)
-            || (translations[detected] && detected)
-            || null;
-        if (initial) {
+        if (initialLang && translations[initialLang] && initialLang !== lang) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setLang(initial);
-            document.documentElement.lang = initial;
+            setLang(initialLang);
+            document.documentElement.lang = initialLang;
         }
-    }, []);
+    }, [initialLang]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const switchLanguage = useCallback((newLang) => {
         if (translations[newLang]) {
@@ -35,6 +33,9 @@ export function I18nProvider({ children }) {
             document.documentElement.lang = newLang;
             if (typeof window !== 'undefined') {
                 localStorage.setItem('searchora-lang', newLang);
+                // Cookie lu par le middleware pour mémoriser la préférence
+                // sur les routes non préfixées (racine anglaise, dashboard).
+                document.cookie = `searchora-lang=${newLang};path=/;max-age=31536000;samesite=lax`;
             }
         }
     }, []);

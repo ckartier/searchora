@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/ui/LocaleLink';
 import {
     AlertTriangle, ArrowRight, BarChart3, CheckCircle2, Eye, FileText, Globe,
     Loader2, Lock, MessageSquare, Search, Sparkles, Target, TrendingUp, Zap,

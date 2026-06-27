@@ -1,13 +1,28 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
+import { localizePath, parseLocale, NON_LOCALIZED_SEGMENTS } from '@/lib/i18n/routing';
 import { Globe, Check } from 'lucide-react';
 
 export default function LanguageSwitcher({ variant = 'default' }) {
     const { lang, switchLanguage, languages } = useI18n();
+    const router = useRouter();
+    const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
+
+    const selectLanguage = (code) => {
+        switchLanguage(code);
+        setOpen(false);
+        // Sur une page publique localisée, on aligne l'URL sur la langue.
+        const { pathname: bare } = parseLocale(pathname || '/');
+        const firstSegment = bare.split('/').filter(Boolean)[0];
+        if (!NON_LOCALIZED_SEGMENTS.includes(firstSegment)) {
+            router.push(localizePath(bare, code));
+        }
+    };
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -36,7 +51,7 @@ export default function LanguageSwitcher({ variant = 'default' }) {
                     {languages.map((l) => (
                         <button
                             key={l.code}
-                            onClick={() => { switchLanguage(l.code); setOpen(false); }}
+                            onClick={() => selectLanguage(l.code)}
                             className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm cursor-pointer ${l.code === lang
                                 ? 'bg-mark-soft text-blue font-medium'
                                 : 'text-text-secondary hover:bg-paper-2'

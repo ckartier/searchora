@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ui/LocaleLink';
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight, Play, Search, BarChart3, FileText, Target, Eye,
